@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Agent | TenantAI</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="stylesheet" href="/static/css/agents.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="/static/images/logo.png">
+  </div>
+  <a href="/dashboard">Dashboard</a>
+  <a href="/upload">File Uploads</a>
+  <a href="/brands">Brands</a>
+  <a href="/agents" class="active">Agents</a>
+  <a href="/sessions">User Chat Sessions</a>
+  <a href="/chat-requests">User Chat Requests</a>
+</div>
+
+<div class="header">
+  <h1>Create Tenant Agent</h1>
+</div>
+
+<div class="main">
+  <div class="card form-card">
+
+    <form method="post" action="/agents/create">
+
+      <input type="text" name="name" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+
+      <button class="primary-btn">Create Agent</button>
+
+    </form>
+
+  </div>
+</div>
+
+</body>
+<script src="/static/script/auth.js"></script>
+
+</html>

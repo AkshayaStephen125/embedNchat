@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Chat Sessions</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <style>
+        .session-list {
+            margin-top: 20px;
+        }
+
+        .session-card {
+            background: #ffffff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .session-card:hover {
+            background: #f3f7ff;
+            transform: translateY(-2px);
+        }
+
+        .session-header {
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .session-message {
+            margin-top: 6px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .session-date {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <img src="static/images/logo.png" alt="TenantAI Logo">
+    </div>
+    <a href="/">Dashboard</a>
+  <a href="/chat-requests" class="active">Chat Requests</a>
+  <a href="/chat-history">Chat History</a>
+  <!-- <a href="/profile">Profile</a> -->
+</div>
+
+<div class="header">
+    <h1>User Chat Sessions</h1>
+    <div>Tenant: {{tenant}}</div>
+</div>
+<div class="main">
+    <div class="session-list">
+
+        {% for session in sessions %}
+        <div class="session-card" onclick="window.location.href='/sessions/{{session.session_id}}'">
+            <div class="session-header">
+                Session ID: {{ session.session_id }}
+            </div>
+
+            <div class="session-message">
+                {{ session.last_message[:180] }}{% if session.last_message|length > 180 %}...{% endif %}
+            </div>
+
+            <div class="session-date">
+                Created: {{ session.created_at.strftime("%d %b %Y, %I:%M %p") }}
+            </div>
+        </div>
+        {% endfor %}
+        {% if message %}{{message}}{%  endif %}
+
+
+    </div>
+</div>
+
+</body>
+</html>

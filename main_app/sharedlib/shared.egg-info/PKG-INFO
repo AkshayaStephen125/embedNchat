@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: shared
+Version: 0.1.0
+Summary: Shared utilities and common modules for FastAPI microservices (DB, logger, utils, schemas)
+Author: Akshaya Stephen
+Author-email: akshayastephen125@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: Framework :: FastAPI
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/plain
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: requires-python
+Dynamic: summary
+
+A reusable Python package containing shared components like database connections, logging, utilities, and schemas used across multiple FastAPI microservices.

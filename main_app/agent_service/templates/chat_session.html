@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Session</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+
+    <style>
+
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+          
+            height: 85vh;
+        }
+
+        .chat-header {
+            padding: 15px 0;
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding-left: 130px;
+            padding-right: 130px;
+            padding-top: 50px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: inline-block;      
+            width: fit-content;        
+            max-width: 60%;  
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: #0b1f3a;
+            color: white;
+        }
+
+        .bot-message {
+            margin-left: auto;
+            background: #eef2ff;
+            color: #333;
+        }
+
+        .agent-message {
+            margin-left: auto;
+            background: white;
+            color: black;
+        }
+
+        .message-time {
+            font-size: 11px;
+            margin-top: 5px;
+            opacity: 0.6;
+        }
+
+        .message-row {
+            display: flex;
+        }
+        .message-row.user {
+            justify-content: flex-start;
+        }
+        .message-row.bot,
+        .message-row.agent {
+            justify-content: flex-end;
+        }
+
+        .chat-input-area {
+            border-top: 1px solid #e5e5e5;
+            padding: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+        .chat-input-area input:disabled {
+        cursor: not-allowed;
+    }
+
+        .chat-input-area #send_btn {
+        margin-top: 10px;
+        height: 34px;
+        border-radius: 6px;
+        background: #0b1f3a;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+     .chat-input-area #send_btn:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+        .chat-input-area button:hover {
+            background: #0b1f3a;
+        }
+
+
+    #send_btn:hover {
+        background: #142c52;
+    }
+
+    #send_btn:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .accept-container {
+    align-items: center;
+    text-align: right;
+    }
+
+    .accept-container button {
+        background: #142c52;
+        color: white;
+        border: none;
+        padding: 10px 10px;
+        border-radius: 8px;
+        width: 200px;
+        cursor: pointer;
+    }
+
+    .accept-container button:hover {
+        background: white;
+    }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <img src="/static/images/logo.png" alt="TenantAI Logo">
+    </div>
+     <a href="/">Dashboard</a>
+  <a href="/chat-requests" class="active">Chat Requests</a>
+  <a href="/chat-history">Chat History</a>
+  <!-- <a href="/profile">Profile</a> -->
+</div>
+
+<div class="header">
+    <h1>Chat Session</h1>
+    <div>Tenant: {{tenant}}</div>
+</div>
+
+<div class="main">
+
+    <div class="chat-wrapper">
+
+        <div class="chat-header">
+            Session ID: {{ session_id }}
+        </div>
+
+        <div class="chat-messages">
+
+            {% for message in messages %}
+                {% if message.sender == "USER" %}
+                 <div class="message-row user">
+                    <div class="message user-message">
+                        {{ message.content }}
+                        <div class="message-time">
+                            {{ message.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                        </div>
+                    </div>
+                        </div>
+                {% elif message.sender == "AGENT" %}
+                  <div class="message-row agent">
+                    <div class="message agent-message">
+                        {{ message.content }}
+                        <div class="message-time">
+                            {{ message.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                        </div>
+                    </div>
+                    </div>
+                {% else %}
+                <div class="message-row bot">
+                    <div class="message bot-message">
+                        {{ message.content }}
+                        <div class="message-time">
+                            {{ message.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                        </div>
+                    </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        </div>
+
+        <!-- Agent Reply Form -->
+        <div class="chat-input-area">
+            <input id="message_txt" type="text" name="message" placeholder="Type your reply as Agent..." {% if not is_accepted %}disabled{% endif %}>
+            <button id="send_btn" onclick=sendMessage() {% if not is_accepted %}disabled{% endif %}>Send</button>
+        </div>
+        {% if not is_accepted %}<div class="accept-container">
+                <button id="accept_btn" onclick="acceptRequest()">Accept Request</button>
+    
+                <div id="alert" style="padding: 20px;"></div>{% endif %}
+</div>
+
+    </div>
+
+</div>
+
+</body>
+<script>
+
+    const BASE_URL = "http://127.0.0.1:8001";
+    const WS_URL = BASE_URL.replace("http", "ws") + "/ws/agent";
+    const SESSION_ID = "{{ session_id }}";
+    const TENANT_ID = "{{session_data.tenant_id}}"
+    const TENANT_BRAND_ID = "{{session_data.tenant_brand_id}}"
+
+    initWebSocket()
+    async function sendMessage() {
+
+    const input = document.querySelector('input[name="message"]');
+    const text = input.value.trim();
+    console.log("text       ",text)
+    if (!text) return;
+    addMessage(text, "AGENT");
+    input.value = "";
+
+    try {
+        ws.send(JSON.stringify({ message: text, sender: "Agent", tenant_id: TENANT_ID, tenant_brand_id: TENANT_BRAND_ID}))
+
+    } catch(error) {
+        // removeTyping();
+        // addMessage("Unable to reach server. "+error, "bot");
+    }
+    }
+    document.getElementById("message_txt").addEventListener("keypress", e => {
+        if(e.key === "Enter") sendMessage()
+    });
+
+    function addMessage(message_text, sender_type){
+        const chatBox = document.querySelector(".chat-messages");
+        const currentDate = new Date();
+        if(sender_type === "USER"){
+            chatBox.insertAdjacentHTML("beforeend",
+            `<div class="message-row user">
+                    <div class="message user-message"> 
+                        ${message_text}
+                        <div class="message-time">`
+                           + currentDate +
+                        `</div>
+                    </div>
+                        </div>`)
+        }
+        else if(sender_type === "AGENT"){
+            chatBox.insertAdjacentHTML("beforeend",
+            `<div class="message-row agent">
+                    <div class="message agent-message">
+                       ${message_text}
+                        <div class="message-time">`
+                           + currentDate +
+                        `</div>
+                    </div>
+                    </div>`)
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+
+    }
+
+    function acceptRequest() {
+        const SESSION_ID = "{{ session_id }}";
+        const BASE_URL = "http://127.0.0.1:8001"
+    fetch(`${BASE_URL}/accept-request`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ session_id: SESSION_ID,
+                                tenant_id: TENANT_ID,
+                                tenant_brand_id: TENANT_BRAND_ID })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.result) {
+            enableChat();
+
+        }
+        else{
+            document.getElementById("alert").innerHTML = data.message
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+function enableChat() {
+    document.getElementById("message_txt").disabled = false;
+    document.getElementById("send_btn").disabled = false;
+
+
+    document.getElementById("accept_btn").style.display = "none";
+}
+
+function initWebSocket() {
+    console.log("eeee   ",WS_URL + "?session_id=" + SESSION_ID)
+    ws = new WebSocket(WS_URL + "?session_id=" + SESSION_ID);
+
+    ws.onopen = () => {
+        console.log("WebSocket connected");
+    };
+
+    ws.onmessage = (event) => {
+       const data = JSON.parse(event.data);
+            addMessage(data.message, "USER");
+    };
+
+    ws.onclose = () => {
+        console.log("WebSocket closed");
+    };
+
+    ws.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        ws.close();
+    };
+}
+
+
+</script>
+</html>

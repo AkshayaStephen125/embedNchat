@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Uploads | TenantAI</title>
+  <link rel="stylesheet" href="static/css/dashboard.css">
+
+  <style>
+    /* ===== Inputs ===== */
+    input[type="text"],
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    /* ===== Brand Selection ===== */
+    .brand-select-box {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 15px;
+      background: #fafafa;
+      margin-bottom: 15px;
+    }
+
+    .select-all {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* All checkboxes in ONE LINE */
+    .brand-grid {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+
+    .brand-option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    /* Optional scrollbar styling */
+    .brand-grid::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .brand-grid::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 6px;
+    }
+
+    /* ===== Button ===== */
+    .primary-btn {
+      padding: 10px 18px;
+      border: none;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .primary-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* ===== Table ===== */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .file-name {
+      font-weight: 500;
+    }
+
+    /* ===== Badges ===== */
+    .badge {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .badge.success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge.warning {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="static/images/logo.png" alt="TenantAI Logo">
+  </div>
+  <a href="/dashboard">Dashboard</a>
+  <a href="/upload">File Uploads</a>
+  <a href="/">User Chat History</a>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <h1>File Uploads</h1>
+  <div class="tenant-info">Tenant: {{ tenant }}</div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Upload Card -->
+  <div class="card">
+    <form method="post" action="/upload" enctype="multipart/form-data">
+
+      <input type="text" name="name" placeholder="Enter file name" required>
+
+      <input type="file" name="file" required>
+
+      <label><strong>Select Brands</strong></label>
+
+      <div class="brand-select-box">
+
+        <!-- Select All -->
+        <!-- <div class="select-all">
+          <input type="checkbox" id="selectAll">
+          <label for="selectAll">Select All</label>
+        </div> -->
+
+        <!-- Brand Checkboxes (One Line) -->
+        <div class="brand-grid">
+          {% for brand in brands %}
+          <div class="brand-option">
+            <input type="checkbox"
+            name="brand_ids"
+            value="{{ brand[0] }}"
+            class="brand-checkbox"
+            id="brand_{{ brand[0] }}">
+            <label for="brand_{{ brand[0] }}">{{ brand[1] }}</label>
+          </div>
+          {% endfor %}
+          <div class="brand-option">
+          <input type="checkbox" id="selectAll" class="brand-checkbox">
+          <label for="selectAll">SELECT ALL</label>
+          </div>
+        </div>
+
+      </div>
+
+      <button type="submit" class="primary-btn">Upload</button>
+
+    </form>
+  </div>
+
+  <!-- Uploaded Files -->
+  <div class="card">
+    <h3>Uploaded Files</h3>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th>File</th>
+          <th>Brand</th>
+          <th>Status</th>
+          <th>Uploaded At</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for file in files %}
+        <tr>
+          <td class="file-name">{{ file.name }}</td>
+
+          <td>
+            <a href="{{ file.file_url }}" target="_blank">
+              View File
+            </a>
+          </td>
+
+          <td>{{ file.brand_name }}</td>
+
+          <td>
+            {% if file.status == "Processed" %}
+              <span class="badge success">Processed</span>
+            {% else %}
+              <span class="badge warning">Processing</span>
+            {% endif %}
+          </td>
+
+          <td>{{ file.uploaded_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Select All Script -->
+<script src="/static/script/auth.js"></script>
+
+<script>
+  const selectAll = document.getElementById("selectAll");
+  const checkboxes = document.querySelectorAll(".brand-checkbox");
+
+  selectAll.addEventListener("change", function() {
+    checkboxes.forEach(cb => cb.checked = this.checked);
+  });
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener("change", function() {
+      const allChecked = [...checkboxes].every(c => c.checked);
+      selectAll.checked = allChecked;
+    });
+  });
+</script>
+
+</body>
+</html>

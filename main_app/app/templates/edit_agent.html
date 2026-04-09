@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Agent</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="stylesheet" href="/static/css/agents.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="/static/images/logo.png">
+  </div>
+  <a href="/dashboard">Dashboard</a>
+  <a href="/upload">File Uploads</a>
+  <a href="/brands">Brands</a>
+  <a href="/agents" class="active">Agents</a>
+  <a href="/sessions">User Chat Sessions</a>
+  <a href="/chat-requests">User Chat Requests</a>
+</div>
+
+<div class="header">
+  <h1>Edit Agent</h1>
+</div>
+
+<div class="main">
+  <div class="card form-card">
+
+    <form method="post" action="/agents/edit/{{ agent.agent_id }}">
+      <input style="display: none;" type="number" name="agent_id" value="{{ agent.agent_id }}" required>
+      <input type="text" name="name" value="{{ agent.name }}" required>
+      <input type="email" name="email" value="{{ agent.email }}" required>
+      <input type="text" name="username" value="{{ agent.username }}" required>
+
+      <input type="password" name="password" placeholder="New Password (optional)">
+
+      <button class="primary-btn">Update</button>
+
+    </form>
+
+  </div>
+</div>
+
+</body>
+<script src="/static/script/auth.js"></script>
+
+</html>

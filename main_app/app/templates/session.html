@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Session</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+
+    <style>
+
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+          
+            height: 85vh;
+        }
+
+        .chat-header {
+            padding: 15px 0;
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding-left: 130px;
+            padding-right: 130px;
+            padding-top: 50px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: inline-block;      
+            width: fit-content;        
+            max-width: 60%;  
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: #0b1f3a;
+            color: white;
+        }
+
+        .bot-message {
+            margin-left: auto;
+            background: #eef2ff;
+            color: #333;
+        }
+
+        .agent-message {
+            margin-left: auto;
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .message-time {
+            font-size: 11px;
+            margin-top: 5px;
+            opacity: 0.6;
+        }
+
+        .message-row {
+            display: flex;
+        }
+        .message-row.user {
+            justify-content: flex-start;
+        }
+        .message-row.bot,
+        .message-row.agent {
+            justify-content: flex-end;
+        }
+
+        .chat-input-area {
+            border-top: 1px solid #e5e5e5;
+            padding: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .chat-input-area button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #0b1f3a;
+            color: white;
+            cursor: pointer;
+        }
+
+        .chat-input-area button:hover {
+            background: #0b1f3a;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <img src="/static/images/logo.png" alt="TenantAI Logo">
+    </div>
+      <a href="/dashboard">Dashboard</a>
+  <a href="/upload">File Uploads</a>
+  <a href="/brands">Brands</a>
+  <a href="/agents">Agents</a>
+  <a href="/sessions" class="active">User Chat Sessions</a>
+  <a href="/chat-requests">User Chat Requests</a>
+</div>
+
+<div class="header">
+    <h1>Chat Session</h1>
+    <div>Tenant: {{tenant}}</div>
+</div>
+
+<div class="main">
+
+    <div class="chat-wrapper">
+
+        <div class="chat-header">
+            Session ID: {{ session_id }}
+        </div>
+
+        <div class="chat-messages">
+
+            {% for message in messages %}
+                {% if message.sender == "USER" %}
+                 <div class="message-row user">
+                    <div class="message user-message">
+                        {{ message.content }}
+                        <div class="message-time">
+                            {{ message.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                        </div>
+                    </div>
+                        </div>
+                {% elif message.sender == "AGENT" %}
+                  <div class="message-row agent">
+                    <div class="message agent-message">
+                        {{ message.content }}
+                        <div class="message-time">
+                            {{ message.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                        </div>
+                    </div>
+                    </div>
+                {% else %}
+                <div class="message-row bot">
+                    <div class="message bot-message">
+                        {{ message.content }}
+                        <div class="message-time">
+                            {{ message.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                        </div>
+                    </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        </div>
+
+        <!-- Agent Reply Form -->
+            <input type="text" name="message" placeholder="Type your reply as Agent..." required>
+            <button onclick=sendMessage()>Send</button>
+
+    </div>
+
+</div>
+
+</body>
+<script src="/static/script/auth.js"></script>
+
+<script>
+
+    const BASE_URL = "http://localhost:8000";
+    const WS_URL = BASE_URL.replace("http", "ws") + "/ws/agent";
+    const SESSION_ID = "{{ session_id }}";
+    ws = new WebSocket(WS_URL+"?session_id="+SESSION_ID);
+
+        ws.onopen = async function() {
+            console.log("WebSocket connection established");
+        };
+
+        ws.onmessage = function(event) {
+            // removeTyping();
+            const data = JSON.parse(event.data);
+            // addMessage(data.message, "bot");
+        }
+
+            async function sendMessage() {
+
+          if (!ws || ws.readyState !== WebSocket.OPEN) {
+        console.error("WebSocket not open. Current state:", ws?.readyState);
+        // removeTyping();
+        // addMessage("Connection lost. Reconnecting...", "bot");
+
+        // initWebSocket();  // auto reconnect
+        // return;
+    }
+
+
+        const input = document.querySelector('input[name="message"]');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = "";
+
+        try {
+            ws.send(JSON.stringify({ message: text, sender: "AGENT" }))
+
+        } catch(error) {
+            // removeTyping();
+            // addMessage("Unable to reach server. "+error, "bot");
+        }
+    }
+
+
+</script>
+</html>

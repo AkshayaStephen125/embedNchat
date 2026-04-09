@@ -1,0 +1,93 @@
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    restart: always
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: akshaya
+      POSTGRES_PASSWORD: ar1269
+      POSTGRES_DB: tenants_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  fastapi:
+    build: 
+      context: ./app
+    depends_on:
+      - kafka
+      - postgres
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./app/.env
+    volumes:
+      - ./app:/app
+      - ./shared:/app/shared
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  ai_service:
+    build:
+      context: ./ai_service
+    depends_on:
+      - kafka
+    env_file:
+      - ./ai_service/.env
+    volumes:
+      - ./ai_service:/app
+      - ./shared:/app/shared
+      - ./app/files:/ai_service/files 
+    restart: always
+
+  agent_service:
+    build:
+      context: ./agent_service
+    depends_on:
+      - kafka
+    env_file:
+      - ./agent_service/.env
+    volumes:
+      - ./agent_service:/app
+      - ./shared:/app/shared
+    ports:
+    - "8001:8001"   
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    restart: always
+
+  db_service:
+    build:
+      context: ./db_service
+    depends_on:
+      - kafka
+    env_file:
+      - ./db_service/.env
+    volumes:
+      - ./db_service:/app
+      - ./shared:/app/shared
+    restart: always
+
+volumes:
+  postgres_data:

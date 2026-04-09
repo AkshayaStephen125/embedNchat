@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agent Dashboard</title>
+  <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="static/images/logo/logo.png" alt="TenantAI Logo">
+  </div>
+
+  <a href="/" class="active">Dashboard</a>
+  <a href="/chat-requests">Chat Requests</a>
+  <a href="/chat-history">Chat History</a>
+  <!-- <a href="/profile">Profile</a> -->
+</div>
+
+<div class="header">
+  <h1>Agent Dashboard</h1>
+  <div>Tenant: {{tenant_name}}</div>
+</div>
+
+<div class="main">
+
+  <!-- Stats Cards -->
+  <div class="grid-4">
+    <div class="card stat">
+      <h3>Total Requests</h3>
+      <p>{{total_requests}}</p>
+    </div>
+
+    <div class="card stat">
+      <h3>Completed</h3>
+      <p>{{completed_requests}}</p>
+    </div>
+
+    <div class="card stat">
+      <h3>Open</h3>
+      <p>{{open_requests}}</p>
+    </div>
+
+    <div class="card stat">
+      <h3>Closed</h3>
+      <p>{{closed_requests}}</p>
+    </div>
+  </div>
+
+  <!-- Messages per day -->
+  <div class="card">
+    <h3>Messages Per Day</h3>
+    <p>(Graph Placeholder - integrate Chart.js later)</p>
+  </div>
+
+  <!-- Completed Requests Trend -->
+  <div class="card">
+    <h3>Daily Completed Requests</h3>
+    <p>(Graph Placeholder)</p>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="card">
+    <h3>Recent Requests</h3>
+    <table class="table">
+      <tr>
+        <th>User</th>
+        <th>Query</th>
+        <th>Status</th>
+      </tr>
+
+      {% for req in recent_requests %}
+      <tr>
+        <td>{{req.user}}</td>
+        <td>{{req.message}}</td>
+        <td>
+          <span class="badge {{req.status}}">
+            {{req.status}}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>

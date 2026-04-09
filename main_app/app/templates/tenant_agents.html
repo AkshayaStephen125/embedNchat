@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tenant Agents | TenantAI</title>
+  <link rel="stylesheet" href="static/css/dashboard.css">
+  <link rel="stylesheet" href="static/css/agents.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="static/images/logo.png">
+  </div>
+  <a href="/dashboard">Dashboard</a>
+  <a href="/upload">File Uploads</a>
+  <a href="/agents" class="active">Tenant Agents</a>
+</div>
+
+<div class="header">
+  <h1>Tenant Agents</h1>
+  <div class="tenant-info">Tenant: {{ tenant }}</div>
+</div>
+
+<div class="main">
+
+  <div class="card top-bar">
+    <h3>Agents</h3>
+    <a href="/agents/create" class="primary-btn">+ Create Agent</a>
+  </div>
+
+  <div class="card">
+    <table class="table clickable-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Username</th>
+          <th>Created At</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for agent in agents %}
+        <tr onclick="goToDetail('{{ agent.id }}')">
+          <td>{{ agent.name }}</td>
+          <td>{{ agent.email }}</td>
+          <td>{{ agent.username }}</td>
+          <td>{{ agent.created_at }}</td>
+          <td>
+            <a href="/agents/edit/{{ agent.id }}" class="edit-btn">Edit</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+  </div>
+
+</div>
+
+<script src="/static/script/auth.js"></script>
+<script>
+
+function goToDetail(id) {
+  window.location.href = `/agents/${id}`;
+}
+</script>
+
+</body>
+</html>

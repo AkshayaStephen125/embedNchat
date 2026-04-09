@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign In</title>
+  <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+
+<div class="auth-wrapper">
+  <div class="logo-container">
+    <img src="static/images/logo-no-bg.png" alt="TenantAI Logo" class="logo">
+  </div>
+<form action="/signin" method="post" enctype="application/x-www-form-urlencoded">
+  <div class="card auth-card">
+    <h2>Sign In</h2>
+
+    <input type="text" placeholder="Username" name="username" required>
+    <input type="password" placeholder="Password" name="password" required>
+
+    <button style="margin-top:10px;">Login</button>
+    <p class="signup-link">
+  Don’t have an account?
+  <a href="/signup">Create new</a>
+</p>
+  </div>
+  </form>
+{% if message %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+{% endif %}
+
+</div>
+
+</body>
+</html>

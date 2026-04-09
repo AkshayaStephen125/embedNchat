@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agent Profile</title>
+  <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="static/images/logo.png" alt="TenantAI Logo">
+  </div>
+
+ <a href="/">Dashboard</a>
+  <a href="/chat-requests">Chat Requests</a>
+  <a href="/chat-history">Chat History</a>
+  <a href="/profile" class="active">Profile</a>
+</div>
+
+<div class="header">
+  <h1>Profile</h1>
+  <div>Tenant: {{tenant_name}}</div>
+</div>
+
+<div class="main">
+
+  <div class="profile-card">
+    <h2>Agent Details</h2>
+
+    <div class="profile-row">
+      <label>Name:</label>
+      <span>{{agent_name}}</span>
+    </div>
+
+    <div class="profile-row">
+      <label>Tenant Company:</label>
+      <span>{{tenant_name}}</span>
+    </div>
+
+    <div class="profile-row">
+      <label>Username:</label>
+      <span>{{username}}</span>
+    </div>
+
+    <div class="profile-row">
+      <label>Email:</label>
+      <span>{{email}}</span>
+    </div>
+
+    <div class="profile-row">
+      <label>Password:</label>
+      <span>********</span>
+    </div>
+
+    <button>Edit Profile</button>
+  </div>
+
+</div>
+
+</body>
+</html>

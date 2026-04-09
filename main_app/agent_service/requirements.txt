@@ -1,0 +1,13 @@
+fastapi 
+uvicorn 
+jinja2 
+python-multipart
+sqlalchemy 
+psycopg2-binary
+passlib[bcrypt] 
+python-jose
+python-dotenv
+pydantic[email]
+pwdlib[argon2]
+kafka-python
+uvicorn[standard]

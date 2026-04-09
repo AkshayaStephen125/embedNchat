@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Brand | TenantAI</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+
+  <style>
+    .brand-layout{
+      display:flex;
+      gap:30px;
+      align-items:flex-start;
+    }
+
+    .brand-form{ width:45%; }
+
+    .preview{
+      width:55%;
+      display:flex;
+      justify-content:center;
+    }
+
+    /* Chat Preview */
+    .chat-window{
+      width:340px;
+      height:520px;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 10px 25px rgba(0,0,0,0.15);
+      display:flex;
+      flex-direction:column;
+      background:#f4f6f9;
+    }
+
+    .chat-header{
+      padding:14px;
+      color:#fff;
+      background:#4f46e5;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .chat-header img{
+      width:38px;
+      height:38px;
+      border-radius:10px;
+      object-fit:cover;
+      background:#fff;
+    }
+
+    .chat-body{
+      flex:1;
+      padding:14px;
+      overflow:auto;
+    }
+
+    .bot-msg{
+      background:#ffffff;
+      padding:10px 14px;
+      border-radius:12px;
+      margin-bottom:10px;
+      width:fit-content;
+      max-width:75%;
+      box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .user-msg{
+      padding:10px 14px;
+      background:#4f46e5;
+      border-radius:12px;
+      margin-left:auto;
+      width:fit-content;
+      max-width:75%;
+      color:#fff;
+    }
+
+    .chat-input{
+      padding:10px;
+      background:#fff;
+      border-top:1px solid #ddd;
+    }
+
+    .form-section{ margin-bottom:20px; }
+
+    .form-section h3{ margin-bottom:10px; }
+
+    input, select, textarea{
+      width:100%;
+      padding:10px;
+      margin-bottom:10px;
+      border:1px solid #ddd;
+      border-radius:6px;
+    }
+
+    .color-input{
+      width:80px;
+      height:50px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="/static/images/logo.png">
+  </div>
+  <a href="/dashboard">Dashboard</a>
+<a href="/upload">File Uploads</a>
+<a href="/brands" class="active">Brands</a>
+<a href="/agents">Agents</a>
+<a href="/sessions">User Chat Sessions</a>
+<a href="/chat-requests">User Chat Requests</a>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <h1>Create Brand</h1>
+  <div class="tenant-info">Tenant: {{ tenant }}</div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="card brand-layout">
+
+    <!-- LEFT FORM -->
+    <div class="brand-form">
+      <form method="post" action="{% if brand %}/brand/{{brand.id}}{% else %}/add_brand{% endif %}" enctype="multipart/form-data">
+
+        <div class="form-section">
+          <h3>Basic Info</h3>
+          <input name="brand_name" id="brandName"
+                 placeholder="Brand Name"
+                 value="{{ brand.brand_name if brand }}">
+          Logo Image<br/>
+          {% if brand %}  {% if brand.logo %}
+          <img src="{{brand.logo}}" class=" .chat-header img" height="70px" width="70px"/>{% endif %}{% endif %}
+          <input type="file" name="logo" id="logoInput">
+        </div>
+
+        <div class="form-section">
+          <h3>Colors</h3>
+          <table>
+            <tr>
+              <td>Background</td>
+              <td><input class="color-input" type="color" id="bgColor"
+                  name="background_color"
+                  value="{{ brand.background_color if brand else '#f4f6f9' }}"></td>
+            </tr>
+            <tr>
+              <td>Header</td>
+              <td><input class="color-input" type="color" id="headerColor"
+                  name="header_color"
+                  value="{{ brand.header_color if brand else '#4f46e5' }}"></td>
+            </tr>
+            <tr>
+              <td>User Message</td>
+              <td><input class="color-input" type="color" id="userColor"
+                  name="user_message_color"
+                  value="{{ brand.user_message_color if brand else '#4f46e5' }}"></td>
+            </tr>
+            <tr>
+              <td>Bot Message</td>
+              <td><input class="color-input" type="color" id="botColor"
+                  name="bot_message_color"
+                  value="{{ brand.bot_message_color if brand else '#ffffff' }}"></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="form-section">
+          <h3>Chat Behavior</h3>
+          <textarea name="welcome_message" id="welcomeMsg"
+            placeholder="Welcome Message">{{ brand.welcome_message if brand }}</textarea>
+
+          Tone<br/>
+          <select name="tone" id="tone">
+            <option value="Professional">Professional</option>
+            <option value="Friendly">Friendly</option>
+            <option value="Casual">Casual</option>
+          </select>
+        </div>
+
+        <button class="primary-btn">Save Brand</button>
+      </form>
+    </div>
+
+    <!-- RIGHT PREVIEW -->
+    <div class="preview">
+      <div class="chat-window" id="chatPreview">
+
+        <div class="chat-header" id="chatHeader">
+          <img id="logoPreview" src="/static/images/logo.png">
+          <div>
+            <strong id="previewName">Brand</strong><br>
+            <small>● Online</small>
+          </div>
+        </div>
+
+        <div class="chat-body">
+          <div class="bot-msg" id="previewBot">
+            <div id="previewWelcome">Hello! How can I help you?</div>
+          </div>
+
+          <div class="user-msg" id="previewUser">
+            Example user message
+          </div>
+        </div>
+
+        <div class="chat-input">
+          Write a message...
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="/static/script/auth.js"></script>
+
+<script>
+const brandName = document.getElementById("brandName");
+const bgColor = document.getElementById("bgColor");
+const headerColor = document.getElementById("headerColor");
+const userColor = document.getElementById("userColor");
+const botColor = document.getElementById("botColor");
+const welcomeMsg = document.getElementById("welcomeMsg");
+const logoInput = document.getElementById("logoInput");
+
+function applyTheme() {
+  document.getElementById("previewName").innerText =
+    brandName.value || "Brand";
+
+  document.getElementById("chatPreview").style.background =
+    bgColor.value;
+
+  document.getElementById("chatHeader").style.background =
+    headerColor.value;
+
+  document.getElementById("previewUser").style.background =
+    userColor.value;
+
+  document.getElementById("previewBot").style.background =
+    botColor.value;
+
+  document.getElementById("previewWelcome").innerText =
+    welcomeMsg.value || "Hello! How can I help you?";
+}
+
+// Apply theme immediately (for edit mode)
+window.addEventListener("DOMContentLoaded", applyTheme);
+
+// Live updates
+brandName.addEventListener("input", applyTheme);
+bgColor.addEventListener("input", applyTheme);
+headerColor.addEventListener("input", applyTheme);
+userColor.addEventListener("input", applyTheme);
+botColor.addEventListener("input", applyTheme);
+welcomeMsg.addEventListener("input", applyTheme);
+
+logoInput.addEventListener("change", function(e){
+  if (e.target.files.length > 0) {
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      document.getElementById("logoPreview").src = ev.target.result;
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  }
+});
+</script>
+
+</body>
+</html>

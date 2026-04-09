@@ -1,0 +1,52 @@
+
+<!DOCTYPE html><html><head>
+<title>Sign Up</title>
+<link rel="stylesheet" href="static/css/styles.css">
+<script>
+
+function validateForm(){
+ var p=document.getElementById('p').value;
+ var c=document.getElementById('c').value;
+ 
+ if(p!==c){
+   document.getElementById('e').innerText='Passwords do not match';
+   return false;
+ }
+ return true;
+}
+
+</script>
+</head>
+<body>
+<div class="auth-wrapper">
+  <div class="logo-container">
+    <img src="static/images/logo-no-bg.png" alt="TenantAI Logo" class="logo">
+  </div>
+
+  <div class="card auth-card">
+    <h2>Tenant Sign Up</h2>
+
+    <form method="post" action="/signup" onsubmit="return validateForm()">
+      <input name="company_name" placeholder="Company Name" required>
+
+      <input name="username" placeholder="User Name" required>
+
+      <input name="email" type="email" placeholder="Email" required>
+
+      <input name="password" id="p" type="password" placeholder="Password" required>
+
+      <input id="c" type="password" placeholder="Confirm Password" required>
+
+      <div id="e" class="error"></div>
+
+      <button style="margin-top:10px;">Register</button>
+
+       <p class="signup-link">
+  Already have an account?
+  <a href="/signin">Sign In</a>
+    </form>
+
+  </div>
+</div>
+</body>
+</html>
