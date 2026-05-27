@@ -1,4 +1,16 @@
 .env
 **/.env
 __pycache__/
+**/__pycache__/
 *.pyc
+
+app/static/logo/
+app/files/
+agent_service/static/logo/
+
+ai_service/chroma_db/
+
+app/logs/
+ai_service/logs/
+agent_service/logs/
+db_service/logs/
