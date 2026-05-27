@@ -2,19 +2,25 @@
 <html>
 <head>
   <title>Tenant Agents | TenantAI</title>
-  <link rel="stylesheet" href="static/css/dashboard.css">
-  <link rel="stylesheet" href="static/css/agents.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="stylesheet" href="/static/css/agents.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 <body>
 
 <div class="sidebar">
-  <div class="sidebar-logo">
-    <img src="static/images/logo.png">
-  </div>
-  <a href="/dashboard">Dashboard</a>
-  <a href="/upload">File Uploads</a>
-  <a href="/agents" class="active">Tenant Agents</a>
+    <div class="sidebar-logo">
+        <img src="/static/images/logo.png" alt="TenantAI Logo">
+    </div>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/upload">File Uploads</a>
+    <a href="/brands">Brands</a>
+    <a href="/agents" class="active">Agents</a>
+    <a href="/sessions">User Chat Sessions</a>
+    <a href="/chat-requests">User Tickets</a>
 </div>
+
 
 <div class="header">
   <h1>Tenant Agents</h1>
@@ -48,7 +54,10 @@
           <td>{{ agent.username }}</td>
           <td>{{ agent.created_at }}</td>
           <td>
-            <a href="/agents/edit/{{ agent.id }}" class="edit-btn">Edit</a>
+            <div class="action-buttons">
+    <a class="icon-btn" href="/agents/edit/{{ agent.id }}"> <i class="fa-solid fa-pen"></i></a>
+    <button onclick="opendelete(`{{ agent.id }}`)" class="icon-btn" href="/delete_agent/{{ agent.id }}"><i class="fa-solid fa-trash"></i></button>
+  </div>
           </td>
         </tr>
         {% endfor %}
@@ -58,12 +67,29 @@
   </div>
 
 </div>
+<div class="modal" id="deleteModal" >
+  <div class="modal-box">
+    <form action="/agent_delete" method="post">
+    <h3>Are you sure to delete this agent?</h3>
+    <input type="hidden" name="agent_id" id="ID" />
 
+    <div class="modal-actions">
+      <button type="button" class="icon-btn" onclick="closeDLModal()">Cancel</button>
+      <button type="submit" class="btn embed">Yes</button>
+    </div>
+    </form>
+  </div>
+</div>
 <script src="/static/script/auth.js"></script>
 <script>
 
 function goToDetail(id) {
   window.location.href = `/agents/${id}`;
+}
+
+function opendelete(id){
+  document.getElementById("deleteModal").style.display="flex";
+  document.getElementById("ID").value = id;
 }
 </script>
 

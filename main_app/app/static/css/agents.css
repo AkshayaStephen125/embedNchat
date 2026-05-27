@@ -53,3 +53,48 @@
 .actions {
   margin-top: 20px;
 }
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  background: #ffffff;
+  border: 1px solid #0b1f3a;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.icon-btn i {
+  color: #6b7280;  
+  font-size: 14px;
+}
+
+.icon-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.icon-btn:hover i {
+  color: #111827; 
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-box{
+  width:460px;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+}

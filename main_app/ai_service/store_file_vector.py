@@ -5,6 +5,9 @@ import time
 from logger import logger
 from dotenv import load_dotenv
 from kafka import KafkaConsumer, KafkaProducer
+from db_config import get_db
+from sqlalchemy.orm import Session
+from shared import models
 
 
 load_dotenv()
@@ -51,13 +54,28 @@ def get_from_kafka():
     try:
         for file_info in consumer:
             file_context=file_info.value
-            logger.info(f"file_context : {file_context}")
-            result, message = rag.file_to_vector(**file_context)
-            producer.send(KAFKA_TOPIC_FILE_UPLOAD_STATUS, value=result)
-            logger.info(f"Status : {result} - {message}")
+            logger.info(f"Recived from topic KAFKA_TOPIC_FILE_UPLOAD: {file_context}")
+            result, message = rag.file_to_vector(file_context['tenant_id'], file_context['uploaded_file'], file_context['brand_ids'])
+            update_result = update_file_status(file_context['file_id'])
+            if update_result:
+                producer.send(KAFKA_TOPIC_FILE_UPLOAD_STATUS, value=file_context)
+                logger.info(f"Sending to topic KAFKA_TOPIC_FILE_UPLOAD_STATUS: Result - {result}, Message - {message}")
     except Exception as e:
         logger.exception(f"Error in recieving from kafka : {e}")
     return result
+
+def update_file_status(file_id):
+    result = False
+    try:
+        db = next(get_db())
+        document = db.query(models.TenantDocument).filter(models.TenantDocument.document_id==file_id).first()
+        document.document_status = "Processed"
+        db.commit()
+        result = True
+    except Exception as e:
+        logger.exception(f"Updation failed {e}")
+    return result
+
 
 
 get_from_kafka()

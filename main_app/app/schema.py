@@ -16,7 +16,7 @@ class TenantAgentEdit(BaseModel):
     name: str
     username: str
     email: EmailStr
-    password: str
+    password: str | None
 
 class TenantLogin(BaseModel):
     username: str

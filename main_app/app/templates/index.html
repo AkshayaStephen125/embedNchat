@@ -1,82 +1,274 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>TenantAI – Multi-Tenant AI Chatbot Platform</title>
-  <link rel="stylesheet" href="static/css/styles.css">
+  <meta charset="UTF-8">
+  <title>Embed and Chat – Design. Embed. Engage.</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+
+
+  <style>
+    .hero-slider {
+      width: 100%;
+      height: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 50px 60px;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease-in-out;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(11,31,58,0.85), rgba(11,31,58,0.4));
+    }
+
+    .slide-content {
+      max-width: 1000px;
+      margin: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide-1 { background-image: url("static/images/hero-1.jpg"); }
+    .slide-2 { background-image: url("static/images/hero-2.png"); }
+    .slide-3 { background-image: url("static/images/hero-3.jpg"); }
+
+    .section {
+      max-width: 1000px;
+      margin: 70px auto;
+      padding: 0 20px;
+    }
+
+    .section h2 {
+      margin-bottom: 20px;
+    }
+
+    .section p {
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 15px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .highlight {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .cta {
+      background: #0b1f3a;
+      color: #fff;
+      text-align: center;
+      padding: 70px 20px;
+      margin-top: 80px;
+    }
+
+    .cta a {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 22px;
+      background: #fff;
+      color: #0b1f3a;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- Header -->
 <header class="site-header">
-  <div class="logo-area">
-    <img src="static/images/logo-no-bg.png" alt="TenantAI Logo" class="header-logo">
-    <!-- <span class="brand-name">TenantAI</span> -->
-  </div>
-
+  <img src="static/images/logo.png" class="header-logo">
   <div class="auth-actions">
     <a href="/signin" class="primary-btn">Sign In</a>
     <a href="/signup" class="link-btn">Sign Up</a>
   </div>
 </header>
 
-<!-- Hero Section -->
-<section class="hero">
-  <h1>Enterprise-Ready Multi-Tenant AI Chatbot Platform</h1>
-<br/>
-  <p>
-    TenantAI is a secure, scalable AI chatbot microservice built for modern
-    enterprises. It enables multiple organizations to integrate AI-powered
-    chat experiences into their applications while maintaining strict data
-    isolation and tenant-level security.
-  </p>
-
-  <p>
-    Designed using FastAPI and modern AI architectures, TenantAI supports
-    document-based intelligence, API-first integrations, and seamless onboarding
-    for companies of any size. Each tenant operates in a fully isolated environment,
-    ensuring privacy, compliance, and performance.
-  </p>
-
-  <p>
-    Whether you are building internal knowledge bots, customer support assistants,
-    or AI copilots, TenantAI gives you a production-ready foundation without
-    compromising control or scalability.
-  </p>
-</section>
-
-<!-- How It Works -->
-<section class="how-it-works">
-  <h2>How It Works</h2>
-
-  <div class="steps">
-    <div class="step-card">
-      <h3>1. Tenant Onboarding</h3>
-      <p>
-        Organizations sign up and securely create their tenant workspace.
-        Each tenant receives isolated storage, AI indexes, and API access.
-      </p>
+<!-- HERO -->
+<section class="hero-slider">
+  <div class="slide slide-1 active">
+    <div class="slide-content">
+      <h1>Embed and Chat</h1>
+      <h3>Design. Embed. Engage.</h3>
+      <p>Build fully branded AI chat experiences and deploy them into your web apps instantly.</p>
     </div>
+  </div>
 
-    <div class="step-card">
-      <h3>2. Upload & Index Documents</h3>
-      <p>
-        Upload PDFs or documents which are processed, converted into embeddings,
-        and stored in a tenant-specific vector database.
-      </p>
+  <div class="slide slide-2">
+    <div class="slide-content">
+      <h1>Customization at the Core</h1>
+      <p>Design chat widgets that feel like a native part of your product.</p>
     </div>
+  </div>
 
-    <div class="step-card">
-      <h3>3. Chat & Integrate</h3>
-      <p>
-        Ask questions via UI or API. Queries are matched against tenant data,
-        and AI responses are generated securely using LLMs.
-      </p>
+  <div class="slide slide-3">
+    <div class="slide-content">
+      <h1>AI + Human Collaboration</h1>
+      <p>Combine automation with real human support when needed.</p>
     </div>
   </div>
 </section>
+
+<!-- INTRO -->
+<section class="section">
+  <h2>Build Intelligent Conversations That Match Your Brand</h2>
+  <p>
+    Embed and Chat is built for teams that want more than a generic chatbot.
+    It enables you to create deeply customized, AI-powered chat interfaces that
+    integrate seamlessly into your product while staying consistent with your
+    brand identity.
+  </p>
+  <p>
+    From UI customization to intelligent document-based responses, the platform
+    gives you full control over how your chatbot looks, behaves, and interacts
+    with users.
+  </p>
+</section>
+
+<!-- PROBLEM / SOLUTION -->
+<section class="section two-col">
+  <div>
+    <h2>The Problem</h2>
+    <p>
+      Most chatbot solutions are rigid, generic, and disconnected from your product.
+      They don’t reflect your design system and often fail to provide accurate,
+      context-aware responses.
+    </p>
+  </div>
+  <div>
+    <h2>The Solution</h2>
+    <p>
+      Embed and Chat bridges this gap by allowing you to design, train, and deploy
+      chat experiences that are both visually aligned and intelligently powered
+      by your own data.
+    </p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="how-it-works">
+  <h2>Platform Capabilities</h2>
+  <div class="steps">
+    <div class="step-card">
+      <h3>Custom Chat Design</h3>
+      <p>Create chat widgets that align perfectly with your UI/UX guidelines.</p>
+    </div>
+    <div class="step-card">
+      <h3>Knowledge-Based AI</h3>
+      <p>Upload documents and generate responses grounded in real data.</p>
+    </div>
+    <div class="step-card">
+      <h3>Simple Embed System</h3>
+      <p>Integrate with a single script—no complex setup required.</p>
+    </div>
+    <div class="step-card">
+      <h3>Real-Time Agent Support</h3>
+      <p>Allow human agents to take over conversations seamlessly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <h2>How the Platform Works</h2>
+  <div class="highlight">
+    <p><strong>Step 1:</strong> Design your chatbot interface</p>
+    <p><strong>Step 2:</strong> Upload PDFs or documents as knowledge sources</p>
+    <p><strong>Step 3:</strong> Copy the embed code</p>
+    <p><strong>Step 4:</strong> Paste it into your web application</p>
+    <p><strong>Step 5:</strong> Start interacting instantly</p>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="section">
+  <h2>Where You Can Use It</h2>
+  <p>
+    Embed and Chat is flexible enough to support multiple business scenarios:
+  </p>
+  <ul>
+    <li>Customer support automation</li>
+    <li>Internal knowledge assistants</li>
+    <li>SaaS onboarding guides</li>
+    <li>Product documentation bots</li>
+    <li>Sales and lead qualification</li>
+  </ul>
+</section>
+
+<!-- AGENT FLOW -->
+<section class="section">
+  <h2>Human Agent Integration</h2>
+  <p>
+    When automation reaches its limit, your users can request human assistance.
+    Agents can log into their dashboard, view pending requests, and respond in real time.
+  </p>
+  <p>
+    This hybrid model ensures that users always receive the support they need,
+    without losing the efficiency of AI automation.
+  </p>
+</section>
+
+<!-- TECH -->
+<section class="section">
+  <h2>Built for Developers</h2>
+  <p>
+    The platform is designed with a developer-first approach, offering API-based
+    integrations, scalable architecture, and easy deployment workflows.
+  </p>
+  <p>
+    Whether you are integrating into a startup product or an enterprise system,
+    the platform adapts to your technical environment.
+  </p>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Start Building with Embed and Chat</h2>
+  <p>Design, customize, and deploy your chatbot in minutes.</p>
+  <a href="/signup">Get Started</a>
+</section>
+
 <footer class="site-footer">
-  <p>© 2026 TenantAI. All rights reserved.</p>
+  <p>© 2026 Embed and Chat. All rights reserved.</p>
 </footer>
+
+<script>
+  let slides = document.querySelectorAll('.slide');
+  let index = 0;
+
+  setInterval(() => {
+    slides[index].classList.remove('active');
+    index = (index + 1) % slides.length;
+    slides[index].classList.add('active');
+  }, 4000);
+</script>
 
 </body>
 </html>

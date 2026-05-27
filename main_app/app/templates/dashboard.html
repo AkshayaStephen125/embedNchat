@@ -1,34 +1,176 @@
-
-<!DOCTYPE html><html><head>
+<!DOCTYPE html>
+<html>
+<head>
 <title>Dashboard</title>
-<link rel="stylesheet" href="static/css/styles.css">
-</head><body>
+<link rel="stylesheet" href="/static/css/styles.css">
+<link rel="stylesheet" href="/static/css/dashboard_tiles.css">
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- Sidebar -->
 <div class="sidebar">
-   <div class="sidebar-logo">
-  <img src="static/images/logo.png" alt="TenantAI Logo">
-</div>
-<a href="/dashboard" class="active">Dashboard</a>
-<a href="/upload">File Uploads</a>
-<a href="/brands">Brands</a>
-<a href="/agents">Agents</a>
-<a href="/sessions">User Chat Sessions</a>
-<a href="/chat-requests">User Chat Requests</a>
-
-
-
+    <div class="sidebar-logo">
+        <img src="/static/images/logo.png" alt="TenantAI Logo">
+    </div>
+    <a href="/dashboard" class="active">Dashboard</a>
+    <a href="/upload">File Uploads</a>
+    <a href="/brands">Brands</a>
+    <a href="/agents">Agents</a>
+    <a href="/sessions">User Chat Sessions</a>
+    <a href="/chat-requests">User Tickets</a>
 </div>
 
+<!-- Header -->
 <div class="header">
-  <h1>Dashboard</h1>
-  <div>Tenant: {{tenant}}</div>
+    <div>
+        <h1>Dashboard</h1>
+        <small>Tenant: {{tenant}}</small>
+    </div>
+    <div>
+        <strong>User:</strong> {{username}}
+    </div>
 </div>
 
+<!-- Main -->
 <div class="main">
-  <div class="card">User chats per day (graph placeholder)</div>
-  <div class="card">User list and audit logs</div>
-  <div class="card">Keywords & improvement questions</div>
+
+    <!-- KPI GRID -->
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>Total Brands</h3>
+            <p>{{total_brands}}</p>
+        </div>
+        <div class="card">
+            <h3>Total Agents</h3>
+            <p>{{total_agents}}</p>
+        </div>
+        <div class="card">
+            <h3>Total Sessions</h3>
+            <p>{{total_sessions}}</p>
+        </div>
+        <div class="card">
+            <h3>Total Files</h3>
+            <p>{{total_files}}</p>
+        </div>
+        <div class="card">
+            <h3>Total Tickets</h3>
+            <p>{{total_tickets}}</p>
+        </div>
+        <div class="card">
+            <h3>Open Tickets</h3>
+            <p>{{open_tickets}}</p>
+        </div>
+        <div class="card">
+            <h3>Active Tickets</h3>
+            <p>{{active_tickets}}</p>
+        </div>
+        <div class="card">
+            <h3>Closed Tickets</h3>
+            <p>{{closed_tickets}}</p>
+        </div>
+    </div>
+
+     <div class="dashboard-chart-row">
+    
+    <!-- TOKEN USAGE -->
+    <div class="card">
+        <h3>Token Usage</h3>
+        <canvas id="tokenChart"></canvas>
+    </div>
+    <div class="card chart-small">
+        <h3>Ticket Status</h3>
+        <canvas id="ticketChart"></canvas>
+    </div>
+    </div>
+
+
+    <!-- CHART ROW -->
+    <div class="dashboard-chart-row">
+
+        <div class="card chart-large">
+            <h3>User Sessions (Date-wise)</h3>
+            <canvas id="sessionsChart"></canvas>
+        </div>
+         <div class="card">
+
+      <h3>User Sessions Per Brand</h3>
+
+      {% for brand in sessions_per_brand %}
+
+      <div class="brand-ticket-row">
+
+        <div class="brand-info">
+
+          <img src="{{brand.logo}}"
+               class="brand-logo">
+
+          <div class="brand-name">
+            {{brand.brand_name}}
+          </div>
+
+        </div>
+
+        <div class="ticket-count">
+          {{brand.session_count}}
+        </div>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+        
+    </div>
+   
 </div>
-</body>
+
+<!-- Charts -->
+<script>
+
+// Sessions Chart
+new Chart(document.getElementById("sessionsChart"), {
+    type: "line",
+    data: {
+        labels: {{session_dates | safe}},
+        datasets: [{
+            label: "Sessions",
+            data: {{session_counts | safe}},
+            fill: false,
+            tension: 0.3
+        }]
+    }
+});
+
+// Ticket Chart
+new Chart(document.getElementById("ticketChart"), {
+    type: "doughnut",
+    data: {
+        labels: ["Open", "Active", "Closed"],
+        datasets: [{
+            data: [{{open_tickets}}, {{active_tickets}}, {{closed_tickets}}]
+        }]
+    }
+});
+
+// Token Chart
+new Chart(document.getElementById("tokenChart"), {
+    type: "bar",
+    data: {
+        labels: {{token_dates | safe}},
+        datasets: [{
+            label: "Tokens Used",
+            data: {{token_usage | safe}}
+        }]
+    }
+});
+
+</script>
+
 <script src="/static/script/auth.js"></script>
+
+</body>
 </html>

@@ -56,7 +56,7 @@ def publish_message_to_ai_service(message_info:dict):
     result = False
     message = ''
     try:
-        message = "sending to bot service"
+        message = "sending to bot service KAFKA_TOPIC_REQ"
         producer.send(KAFKA_TOPIC_REQ, value=message_info)
         producer.flush()
         result = True
@@ -68,7 +68,7 @@ def publish_message_to_agent_service(message_info:dict):
     result = False
     message = ''
     try:
-        message = "sending to agent service"
+        message = f"sending to agent service KAFKA_TOPIC_AGENT  {message_info}"
         producer.send(KAFKA_TOPIC_AGENT, value=message_info)
         producer.flush()
         result = True
@@ -80,11 +80,10 @@ def publish_message_to_db(message_info:dict):
     result = False
     message = ''
     try:
-        print("send to kafka")
         producer.send(STORE_MESSAGE_KAFKA_TOPIC, value=message_info)
         producer.flush()
         result = True
-        message = "Message stored successfully"
+        message = "sending to kafka STORE_MESSAGE_KAFKA_TOPIC"
     except Exception as e:
         logger.exception(f"Kafka error: {e}")
     return result, message
@@ -92,7 +91,7 @@ def publish_message_to_db(message_info:dict):
 def publish_file_to_kafka(file_info:dict):
     result = False
     try:
-        print("send to kafka")
+        print("send to kafka KAFKA_TOPIC_FILE_UPLOAD")
         producer.send(KAFKA_TOPIC_FILE_UPLOAD, value=file_info)
         producer.flush()
         result = True
@@ -104,18 +103,30 @@ def publish_file_to_kafka(file_info:dict):
 def consume_kafka_messages(loop):
 
     consumer = get_consumer(KAFKA_TOPIC_RES)
-
     for message_session in consumer:
-
         message_info = message_session.value
-
-        logger.info(f"Received/////////////////////////////////: {message_info}")
-
+        logger.info(f"Received from KAFKA_TOPIC_RES: {message_info}")
         session_id = message_info.get("session_id")
 
         if session_id:
             asyncio.run_coroutine_threadsafe(
-                manager.broadcast(message_info),
+                manager.broadcast_session(message_info),
+                loop
+            )
+
+
+def consume_kafka_messages_file_upload_status(loop):
+
+    consumer = get_consumer(KAFKA_TOPIC_FILE_UPLOAD_STATUS)
+    for message_session in consumer:
+        message_info = message_session.value
+        logger.info(f"Received from KAFKA_TOPIC_FILE_UPLOAD_STATUS: {message_info}")
+        tenant_id = message_info.get("tenant_id")
+        file_id = message_info.get("file_id")
+
+        if file_id and tenant_id:
+            asyncio.run_coroutine_threadsafe(
+                manager.broadcast_tenant(message_info),
                 loop
             )
 
@@ -123,10 +134,7 @@ async def response_listener():
 
     loop = asyncio.get_running_loop()
 
-    loop.run_in_executor(
-        None,
-        consume_kafka_messages,
-        loop   
-    )
+    loop.run_in_executor(None, consume_kafka_messages, loop)
+    loop.run_in_executor(None, consume_kafka_messages_file_upload_status, loop)
 
 

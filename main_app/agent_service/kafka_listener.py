@@ -36,7 +36,7 @@ def consume_kafka_messages(loop):
 
         message_info = message_session.value
 
-        print("Received:", message_info)
+        print("Received from topic KAFKA_TOPIC_AGENT:", message_info)
 
         session_id = message_info.get("session_id")
 

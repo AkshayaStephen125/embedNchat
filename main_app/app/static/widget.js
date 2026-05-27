@@ -9,9 +9,12 @@
     const INIT_TOKEN_URL = BASE_URL + "/api/init-token";
     const REFRESH_TOKEN_URL = BASE_URL + "/api/refresh-token";
     const WS_URL = BASE_URL.replace("http", "ws") + "/ws/chat";
+    const VERIFY_HISTORY = BASE_URL + "/api/check-history";
+    const HISTORY_URL = BASE_URL + "/api/chat-history";
 
     let ws = null;
     let lastEventName = null;
+    let ticketId = null;
 
     if (!API_KEY) {
         console.error("TenantAI: Missing API key");
@@ -40,6 +43,7 @@
 
     // ---------- Theme Variables ----------
     const LOGO = BASE_URL+config?.theme?.logo || "https://cdn-icons-png.flaticon.com/512/4712/4712027.png";
+    const BRAND_ID = config?.theme?.id || 0;
     const BRAND_NAME = config?.theme?.brand_name || "TenantAI ";
     const WELCOME_MESSAGE = config?.theme?.welcome_message || "Hi, How can I assist you?";
     const HEADER_COLOR = config?.theme?.header_color || "#4f46e5";
@@ -47,6 +51,7 @@
     const USER_MSG_COLOR = config?.theme?.user_message_color || HEADER_COLOR;
     const BOT_MSG_COLOR = config?.theme?.bot_message_color || "#ffffff";
 
+    
     // ---------- Animations ----------
     const style = document.createElement("style");
     style.innerHTML = `
@@ -98,7 +103,7 @@
         height: "64px",
         borderRadius: "50%",
         background: HEADER_COLOR,
-        color: "#fff",
+        color: BACKGROUND_COLOR,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -112,8 +117,10 @@
     launcher.onmouseleave = () => launcher.style.transform = "scale(1)";
     document.body.appendChild(launcher);
 
-    // ---------- Chat Container ----------
     const chat = document.createElement("div");
+
+
+    // ---------- Chat Container ----------
     Object.assign(chat.style, {
         position: "fixed",
         bottom: "100px",
@@ -159,6 +166,30 @@
     header.appendChild(logo);
     header.appendChild(title);
     chat.appendChild(header);
+
+    const historyBtnWrapper = document.createElement("div");
+    Object.assign(historyBtnWrapper.style, {
+        padding: "10px",
+        textAlign: "center",
+        background: BACKGROUND_COLOR,
+    });
+
+    const historyBtn = document.createElement("button");
+    historyBtn.innerText = "Load Previous Messages";
+    historyBtn.style.display = "none"
+
+    Object.assign(historyBtn.style, {
+        padding: "8px 12px",
+        border: "none",
+        borderRadius: "28px",
+        background: HEADER_COLOR,   // ✅ theme color
+        color: "#fff",
+        cursor: "pointer",
+        fontSize: "13px"
+    });
+
+    historyBtnWrapper.appendChild(historyBtn);
+    chat.appendChild(historyBtnWrapper);
 
     // ---------- Messages ----------
     const messages = document.createElement("div");
@@ -276,6 +307,7 @@ function removeTyping() {
 
             if (!res.ok) throw new Error("Failed to get token");
             const tokenData = await res.json();
+            console.log("tokenData      ",tokenData)
             chatToken = tokenData.token;
             refreshToken = tokenData.refresh_token
             accessExpiry = tokenData.access_expiry
@@ -357,6 +389,13 @@ function removeTyping() {
             removeTyping();
             const data = JSON.parse(event.data);
             lastEventName = data.event
+            if(data.ticket_id){
+                ticketId = data.ticket_id;
+            }
+            else{
+                ticketId = null;
+                lastEventName = "BOT_MESSAGE"
+            }
             addMessage(data.message, data.sender);
             console.log("lastEventName  ",lastEventName)
             
@@ -386,7 +425,7 @@ function removeTyping() {
         showTyping();
 
         try {
-            ws.send(JSON.stringify({ message: text, sender: "USER", event: lastEventName || "BOT_MESSAGE" }))
+            ws.send(JSON.stringify({ message: text, sender: "User", event: lastEventName || "BOT_MESSAGE", ticket_id: ticketId }))
 
         } catch(error) {
             removeTyping();
@@ -399,17 +438,8 @@ function removeTyping() {
         if (e.key === "Enter") sendMessage();
     });
 
-    async function token_lookup() {
-        
-    }
-
-    // }
-    // initWebSocket()
-
-
 
 function startSessionWatcher() {
-    console.log("Activatedd")
     if (sessionTimer) {
         clearTimeout(sessionTimer);
     }
@@ -417,8 +447,6 @@ function startSessionWatcher() {
     console.log("expiry ",expiry)
     const date = new Date(expiry * 1000);
 
-    console.log("timee      ",date.toString());
-    
 
     if (!expiry) {
         console.log("No expiry found");
@@ -429,9 +457,6 @@ function startSessionWatcher() {
     const now = Date.now();
 
     let timeLeft = expiryTime - now;
-    console.log("timeLeft   ",timeLeft)
-
-    console.log("Token refreshes in:", timeLeft / 1000, "seconds");
 
     if (timeLeft <= 0) {
         refreshToken();
@@ -459,7 +484,11 @@ async function refreshToken() {
     .then(data => {
         if (data.result) {
             console.log("Token refreshed");
-        localStorage.setItem("access_expiry", data.access_expiry)
+        localStorage.setItem("chat_token", data.new_token)
+        localStorage.setItem("refresh_chat_token", data.new_refresh_token)
+        localStorage.setItem("access_expiry", data.new_access_expiry)
+             
+
 
         // restart timer
         startSessionWatcher();
@@ -471,6 +500,100 @@ async function refreshToken() {
     })
     .catch(err => console.error(err));
 }
+
+async function checkHistory() {
+    await fetch(VERIFY_HISTORY, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "x-api-key": API_KEY,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"token": localStorage.getItem("chat_token"), "brand_id": BRAND_ID})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.result) {
+            historyBtn.style.display = "inline-block"
+            }
+        else{
+            console.log("Token refresh failed");
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+checkHistory();
+
+async function loadPreviousMessages() {
+    try {
+        historyBtn.innerText = "Loading...";
+        historyBtn.style.display = historyBtn.style.display === "none" ? "flex" : "none"
+        const token = localStorage.getItem("chat_token");
+
+        const res = await fetch(HISTORY_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-api-key": API_KEY
+            },
+            body: JSON.stringify({
+                token: localStorage.getItem("chat_token")
+            })
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch history");
+
+        const data = await res.json();
+        console.log("History: ", data);
+
+        if (!data.result) {
+            addMessage("No previous messages found", "System");
+            return;
+        }
+
+        data.messages.reverse().forEach(msg => {
+            const row = document.createElement("div");
+            row.style.display = "flex";
+            row.style.marginBottom = "10px";
+
+            const bubble = document.createElement("div");
+            bubble.innerText = mdToText(msg.message);
+
+            Object.assign(bubble.style, {
+                padding: "10px 14px",
+                borderRadius: "16px",
+                maxWidth: "80%",
+                wordWrap: "break-word"
+            });
+
+            if (msg.sender === "USER") {
+                row.style.justifyContent = "flex-end";
+                bubble.style.background = USER_MSG_COLOR;
+                bubble.style.color = "#fff";
+            } else {
+                row.style.justifyContent = "flex-start";
+                bubble.style.background = BOT_MSG_COLOR;
+                bubble.style.border = "1px solid #e5e7eb";
+            }
+
+            row.appendChild(bubble);
+
+            messages.insertBefore(row, messages.firstChild);
+            messages.scrollTop = messages.scrollHeight;
+
+        });
+
+    } catch (err) {
+        console.error(err);
+        addMessage("Failed to load previous messages", "System");
+    } finally {
+        historyBtn.innerText = "Load Previous Messages";
+        historyBtn.disabled = false;
+    }
+}
+
+historyBtn.onclick = loadPreviousMessages;
 
 
 

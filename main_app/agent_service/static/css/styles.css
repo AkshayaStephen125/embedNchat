@@ -38,6 +38,10 @@ body {
   gap: 14px;
 }
 
+.active{
+  font-weight: 500;
+}
+
 .link-btn {
   text-decoration: none;
   color: #0b1f3a;

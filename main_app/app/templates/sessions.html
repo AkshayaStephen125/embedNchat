@@ -2,8 +2,109 @@
 <html>
 <head>
     <title>User Chat Sessions</title>
-    <link rel="stylesheet" href="static/css/styles.css">
+
+    <link rel="stylesheet" href="/static/css/styles.css">
+
     <style>
+
+        .session-container {
+            margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           BRAND GRID
+        ========================== */
+
+        .brand-grid {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 5px;
+        }
+
+        .brand-card {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: 0.25s ease;
+            margin-top: 10px;
+
+            display: flex;
+            align-items: center;
+
+            flex-shrink: 0;
+        }
+
+        .brand-card:hover {
+            background: #f3f7ff;
+            transform: translateY(-3px);
+        }
+
+        /* ACTIVE BRAND */
+
+        .brand-card.active {
+            background: #0b1f3a;
+            color: white;
+        }
+
+        .brand-card.active .brand-name {
+            color: white;
+        }
+
+        .brand-card.active .brand-logo-wrapper {
+            background: white;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .brand-logo-wrapper {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 18px;
+
+            font-size: 24px;
+            color: black;
+            font-family: Arial, sans-serif;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .brand-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #222;
+        }
+
+        /* =========================
+           SESSION LIST
+        ========================== */
+
         .session-list {
             margin-top: 20px;
         }
@@ -11,9 +112,8 @@
         .session-card {
             background: #ffffff;
             padding: 15px 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             cursor: pointer;
             transition: 0.2s ease;
         }
@@ -33,57 +133,220 @@
             margin-top: 6px;
             color: #666;
             font-size: 14px;
+            line-height: 1.5;
         }
 
         .session-date {
-            margin-top: 5px;
+            margin-top: 6px;
             font-size: 12px;
             color: #999;
         }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            background: white;
+            border-radius: 14px;
+        }
+
+        .brand-card.active .brand-logo-wrapper {
+            background: white;
+            color: #0b1f3a;
+        }
+
+        @media (max-width: 768px) {
+
+            .brand-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
     </style>
 </head>
+
 <body>
 
 <div class="sidebar">
+
     <div class="sidebar-logo">
-        <img src="static/images/logo.png" alt="TenantAI Logo">
+        <img src="/static/images/logo.png" alt="TenantAI Logo">
     </div>
+
     <a href="/dashboard">Dashboard</a>
     <a href="/upload">File Uploads</a>
     <a href="/brands">Brands</a>
     <a href="/agents">Agents</a>
     <a href="/sessions" class="active">User Chat Sessions</a>
-    <a href="/chat-requests">User Chat Requests</a>
+    <a href="/chat-requests">User Tickets</a>
+
 </div>
 
 <div class="header">
     <h1>User Chat Sessions</h1>
-    <div>Tenant: {{tenant}}</div>
+    <div>Tenant: {{ tenant }}</div>
 </div>
 
 <div class="main">
-    <div class="session-list">
 
-        {% for session in sessions %}
-        <div class="session-card" onclick="window.location.href='/sessions/{{session.session_id}}'">
-            <div class="session-header">
-                Session ID: {{ session.session_id }}
+    <div class="session-container">
+
+        <div class="brand-grid">
+            <div class="brand-card active"
+                 data-brand="all">
+
+                <div class="brand-row">
+
+                    <div class="brand-logo-wrapper">
+                         &#9776;    
+                    </div>
+
+                    <div class="brand-name">
+                        All Sessions
+                    </div>
+
+                </div>
+
+            </div>
+            {% for brand in brands %}
+
+            <div class="brand-card"
+                 data-brand="{{ brand.id }}">
+
+                <div class="brand-row">
+
+                    <div class="brand-logo-wrapper">
+
+                        <img src="{{ brand.logo }}"
+                             class="brand-logo"
+                             alt="{{ brand.brand_name }}">
+
+                    </div>
+
+                    <div class="brand-name">
+                        {{ brand.brand_name }}
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="session-message">
-                {{ session.last_message[:180] }}{% if session.last_message|length > 180 %}...{% endif %}
-            </div>
+            {% endfor %}
 
-            <div class="session-date">
-                Created: {{ session.created_at.strftime("%d %b %Y, %I:%M %p") }}
-            </div>
         </div>
-        {% endfor %}
+
+  
+
+        <div class="session-list">
+
+            {% for session in sessions %}
+
+            <div class="session-card session-item"
+                 data-brand="{{ session.tenant_brand_id }}"
+                 onclick="window.location.href='/sessions/{{ session.session_id }}'">
+
+                <div class="session-header">
+                    Session ID: {{ session.session_id }}
+                </div>
+
+                <div class="session-message">
+                    {{ session.last_message[:180] }}
+                    {% if session.last_message|length > 180 %}...{% endif %}
+                </div>
+
+                <div class="session-date">
+                    Created:
+                    {{ session.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- EMPTY STATE -->
+
+        <div class="empty-state"
+             id="emptyState"
+             style="display:none;">
+
+            No sessions found for this brand.
+
+        </div>
 
     </div>
+
 </div>
 
-</body>
 <script src="/static/script/auth.js"></script>
 
+<script>
+
+    const brandCards = document.querySelectorAll(".brand-card");
+    const sessionItems = document.querySelectorAll(".session-item");
+    const emptyState = document.getElementById("emptyState");
+
+    brandCards.forEach(card => {
+
+        card.addEventListener("click", () => {
+
+            /* =========================
+               ACTIVE TAB UI
+            ========================== */
+
+            brandCards.forEach(c => {
+                c.classList.remove("active");
+            });
+
+            card.classList.add("active");
+
+            /* =========================
+               FILTER SESSIONS
+            ========================== */
+
+            const selectedBrand = card.dataset.brand;
+
+            let visibleCount = 0;
+
+            sessionItems.forEach(session => {
+
+                const sessionBrand = session.dataset.brand;
+
+                if (
+                    selectedBrand === "all" ||
+                    selectedBrand === sessionBrand
+                ) {
+
+                    session.style.display = "block";
+                    visibleCount++;
+
+                } else {
+
+                    session.style.display = "none";
+
+                }
+
+            });
+
+            /* =========================
+               EMPTY STATE
+            ========================== */
+
+            if (visibleCount === 0) {
+
+                emptyState.style.display = "block";
+
+            } else {
+
+                emptyState.style.display = "none";
+
+            }
+
+        });
+
+    });
+
+</script>
+
+</body>
 </html>

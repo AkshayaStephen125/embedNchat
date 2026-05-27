@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Column, Integer, String, Boolean, Enum, ForeignKey, Text, JSON, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, Enum, ForeignKey, Text, JSON, DateTime, Date
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from db_config import Base
@@ -25,6 +25,11 @@ class Sender(enum.Enum):
 class Takeover(enum.Enum):
     Auto = "AUTO"
     Manual = "MANUAL"
+
+class TicketStatus(enum.Enum):
+    Open = "OPEN"
+    Inprogress = "INPROGRESS"
+    Closed = "Closed"
 
 
 class Tenant(Base):
@@ -63,7 +68,7 @@ class TenantBrand(Base):
     tenant_id = Column(Integer, ForeignKey("tenant.tenant_id"))
     brand_name = Column(String(50), nullable=False)
     logo = Column(String(250), nullable=False)
-    color_theme = Column(Integer, ForeignKey("tenant_brand_color_theme.id"))
+    color_theme = Column(Integer, ForeignKey("tenant_brand_color_theme.id", use_alter=True))
     welcome_message = Column(String(200), nullable=True)
     tone = Column(Enum(Tone), default=Tone.Professional)
     api_key = Column(String)
@@ -75,7 +80,7 @@ class TenantBrandColorTheme(Base):
     __tablename__ = "tenant_brand_color_theme"
 
     id = Column(Integer, primary_key=True, index=True)
-    tenant_brand_id = Column(Integer, ForeignKey("tenant_brand.id"))
+    tenant_brand_id = Column(Integer, ForeignKey("tenant_brand.id", use_alter=True))
     background_color = Column(String(50), nullable=False)
     header_color = Column(String(50), nullable=False)
     user_message_color = Column(String(50), nullable=False)
@@ -115,20 +120,35 @@ class ChatHistory(Base):
     __tablename__ = "chat_history"
 
     id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime)
+    tenant_id = Column(Integer, ForeignKey("tenant.tenant_id"), nullable=False)
     session_id = Column(UUID(as_uuid=True), ForeignKey("user_session.id"), nullable=False)
     message = Column(Text, nullable=False)
     sender = Column(Enum(Sender), nullable=False)
     takeover = Column(Enum(Takeover), default=Takeover.Auto)
-    agent_id = Column(Integer, ForeignKey("tenant_agent.id"), nullable=True)
+    ticket_id = Column(Integer, ForeignKey("agent_chat_tickets.ticket_id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
-class AgentChatHistory(Base):
-    __tablename__ = "agent_chat_history"
+class TockenUsage(Base):
+    __tablename__="token_usage"
 
     id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, nullable=False)
+    tenant_id = Column(Integer, ForeignKey("tenant.tenant_id"), nullable=False)
+    session_id = Column(UUID(as_uuid=True), ForeignKey("user_session.id"), nullable=False)
+    token_count = Column(Integer, default=0)
+
+
+class AgentChatTickets(Base):
+    __tablename__ = "agent_chat_tickets"
+
+    ticket_id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenant.tenant_id"), nullable=False)
     session_id = Column(UUID(as_uuid=True), ForeignKey("user_session.id"), nullable=False)
     agent_id = Column(Integer, ForeignKey("tenant_agent.id"), nullable=True)
-    is_accepted = Column(Boolean, default=False)
+    status = Column(Enum(TicketStatus), default=TicketStatus.Open)
+    accepted_time = Column(DateTime)
+    closed_time = Column(DateTime)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 # class AuditLog(Base):

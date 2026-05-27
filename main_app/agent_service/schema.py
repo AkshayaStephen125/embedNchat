@@ -7,6 +7,7 @@ class TenantAgentLogin(BaseModel):
 
 
 class AcceptRequest(BaseModel):
+    ticket_id: int
     session_id: str
     tenant_id: int
     tenant_brand_id: int

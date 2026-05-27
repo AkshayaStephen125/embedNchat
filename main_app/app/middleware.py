@@ -12,7 +12,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
 
-        public_exact_paths = {"/", "/signin", "/signup"}
+        public_exact_paths = {"/", "/signin", "/signup", "/refresh"}
         public_prefix_paths = ("/static", "/ws", "/api")
 
         if request.method == "OPTIONS":
@@ -27,7 +27,6 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         
         token = request.cookies.get("access_token")
-
 
         if not token:
             return self._redirect_to_login(request)

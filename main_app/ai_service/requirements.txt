@@ -4,3 +4,5 @@ pypdf
 groq
 python-dotenv
 kafka-python
+sqlalchemy 
+psycopg2-binary

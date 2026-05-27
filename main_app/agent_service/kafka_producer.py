@@ -37,7 +37,8 @@ producer = get_producer()
 def publish_message_to_kafka(message:dict):
     result = False
     try:
-        logger.info("----------sending to fastapi----------------")
+        logger.info("----------sending to topic KAFKA_TOPIC_RES----------------")
+        logger.info(f"message that send to fastapi: {message}")
         producer.send(KAFKA_TOPIC_RES, value=message)
         producer.flush()
         result = True
@@ -48,7 +49,8 @@ def publish_message_to_kafka(message:dict):
 def publish_message_to_db(message:dict):
     result = False
     try:
-        logger.info("----------sending to db_service----------------")
+        logger.info("----------sending to topic STORE_MESSAGE_KAFKA_TOPIC----------------")
+        logger.info(f"message that send to db_service: {message}")
         producer.send(STORE_MESSAGE_KAFKA_TOPIC, value=message)
         producer.flush()
         result = True

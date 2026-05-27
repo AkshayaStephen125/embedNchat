@@ -1,4 +1,3 @@
-// ✅ Get cookie
 function getCookie(name) {
     return document.cookie
         .split("; ")
@@ -6,7 +5,6 @@ function getCookie(name) {
         ?.split("=")[1];
 }
 
-// ✅ Start session watcher
 let sessionTimer = null;
 
 function startSessionWatcher() {
@@ -43,7 +41,6 @@ function startSessionWatcher() {
     }
 }
 
-// ✅ Show dialog
 function showSessionDialog() {
     console.log("Showing session dialog");
 
@@ -57,7 +54,6 @@ function showSessionDialog() {
     refreshToken();
 }
 
-// ✅ Refresh token
 async function refreshToken() {
     const res = await fetch("/refresh", {
         method: "POST",
@@ -67,14 +63,12 @@ async function refreshToken() {
     if (res.ok) {
         console.log("Token refreshed");
 
-        // restart timer
         startSessionWatcher();
     } else {
         window.location.href = "/signin";
     }
 }
 
-// ✅ Start automatically
 window.onload = () => {
     startSessionWatcher();
 };

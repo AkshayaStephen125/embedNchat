@@ -14,7 +14,7 @@ from db_config import get_db
 from fastapi import Request, HTTPException, Depends, Header, Response
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from pathlib import Path
 from datetime import datetime, timedelta
 
@@ -98,7 +98,8 @@ def edit_tenant_agent(tenant_id, tenant:schema.TenantAgentEdit, db: Session = ge
             existing_tenant.agent_name = tenant.name,
             existing_tenant.username = tenant.username,
             existing_tenant.email = tenant.email,
-            existing_tenant.hashed_password = auth.hash_password(tenant.password),
+            if tenant.password:
+                existing_tenant.hashed_password = auth.hash_password(tenant.password),
         db.commit()
         result = True
     except Exception as e:
@@ -192,7 +193,7 @@ def tenant_file_upload(request: Request, file_name, brand_ids, file, db):
     except Exception as e:
         logger.exception("File upload failed")
         message = str(e)
-    return result, message, file_location
+    return result, message, file_location, document.document_id
 
 def upload_brand_detail(request, logo, tenant_brand_info:schema.BrandCreate, db: Session = get_db()):
     result = False
@@ -306,7 +307,8 @@ def get_tenant_agents(request: Request, db: Session = get_db()):
             data = {'id':agent.id,
                         'name':agent.agent_name,
                         'username':agent.username,
-                        'email':agent.email}
+                        'email':agent.email,
+                        'created_at':agent.created_at.date().strftime("%Y-%m-%d")}
             agent_list.append(data)
             result = True
     except Exception as e:
@@ -323,7 +325,8 @@ def get_tenant_agent(tenant_id, agent_id, db: Session = get_db()):
         agent_dict = {'agent_id':agent.id,
                 'name':agent.agent_name,
                 'username':agent.username,
-                'email':agent.email}
+                'email':agent.email,
+                'created_at':agent.created_at.strftime("%-d/%-m/%Y, %-I:%M:%S %p").lower()}
         result = True
     except Exception as e:
         logger.exception("Getting brands failed")
@@ -423,6 +426,45 @@ def brand_options(tenant_id, db: Session = get_db()):
         message = str(e)
     return result, message, brand_data
 
+def tenant_documents(tenant_id, db):
+    result = False
+    message = ''
+    document_data = list()
+    try:
+        documents = db.query(models.TenantDocument).filter(models.TenantDocument.tenant_id == tenant_id).order_by(models.TenantDocument.document_id.desc())
+        for document in documents:
+            brand_names = []
+            if document.brands:
+                brand_names = []
+
+                for brand in document.brands:
+                    brand_data = (
+                        db.query(models.TenantBrand)
+                        .filter(models.TenantBrand.id == brand.id)
+                        .first()
+                    )
+
+                    if brand_data:
+                        brand_names.append(brand_data.brand_name)
+
+                        document.brand_names = ", ".join(brand_names)
+
+                    else:
+                        document.brand_names = ""
+            data = dict()
+            data = {'id':document.document_id,
+                        'name':document.document_name,
+                        'file_url':document.document_path,
+                        'brand_name': document.brand_names,
+                        'status':document.document_status.value,
+                        'uploaded_at':document.created_at.strftime("%-d/%-m/%Y, %-I:%M:%S %p").lower()}
+            document_data.append(data)
+            result = True
+    except Exception as e:
+        logger.exception("Getting brand options failed")
+        message = str(e)
+    return result, message, document_data
+
 
 def save_message(session_id, message, sender, db, takeover='Auto'):
     result = False,
@@ -444,12 +486,14 @@ def save_message(session_id, message, sender, db, takeover='Auto'):
     return result
 
 
-def publish_file_to_kafka(tenant_id, uploaded_file, brand_ids):
+def publish_file_to_kafka(tenant_id, name, uploaded_file, brand_ids, file_id):
     result = False
     message = ''
     try:
         file_info = dict()
+        file_info['file_id'] = file_id
         file_info['tenant_id'] = tenant_id
+        file_info['name'] = name
         file_info['uploaded_file'] = uploaded_file
         file_info['brand_ids'] = brand_ids
         result = kafka_producer.publish_file_to_kafka(file_info)
@@ -464,12 +508,13 @@ def get_user_sessions(tenant_id, db):
     result = False
     session_list = list()
     try:
-        sessions = db.query(models.UserSession).filter(models.UserSession.tenant_id==tenant_id).order_by(models.UserSession.id.desc())
+        sessions = db.query(models.UserSession).filter(models.UserSession.tenant_id==tenant_id).order_by(models.UserSession.created_at.desc())
         for session in sessions:
             session_dict = dict()
             last_message = db.query(models.ChatHistory).filter(models.ChatHistory.session_id == session.id).order_by(desc(models.ChatHistory.created_at)).first()
             if last_message:
                 session_dict = {'session_id': session.id,
+                                'tenant_brand_id': session.tenant_brand_id,
                                 'last_message': last_message.message,
                                 'created_at': session.created_at
                                 }
@@ -479,6 +524,34 @@ def get_user_sessions(tenant_id, db):
         db.rollback()
         logger.exception(f"Fetching chat sessions failed {e}")
     return result, session_list
+
+def get_user_sessions_tickets(ticket_id, db):
+    result = False
+    ticket_status = ''
+    session_info = dict()
+    session_chat_list = list()
+    try:
+        ticket = db.query(models.AgentChatTickets).filter(models.AgentChatTickets.ticket_id==ticket_id).first()
+        session = db.query(models.UserSession).filter(models.UserSession.id==ticket.session_id).first()
+        ticket_status = ticket.status.value
+        session_info["session_id"] = session.id
+        session_info["tenant_id"] = session.tenant_id
+        session_info["tenant_brand_id"] = session.tenant_brand_id
+
+        if session:
+            messages = db.query(models.ChatHistory).filter(models.ChatHistory.ticket_id==ticket.ticket_id).order_by((models.ChatHistory.timestamp)).all()
+            for message in messages:
+                message_dict = dict()
+                message_dict = {'sender': message.sender.value,
+                                'content': reformat_content(message.message),
+                                'created_at': message.created_at
+                                }
+                session_chat_list.append(message_dict)
+        result = True
+    except Exception as e:
+        db.rollback()
+        logger.exception(f"Fetching chat history failed {e}")
+    return result, session_info, session_chat_list, ticket_status
 
 def get_user_sessions_chats(session_id, db):
     result = False
@@ -495,7 +568,7 @@ def get_user_sessions_chats(session_id, db):
         result = True
     except Exception as e:
         db.rollback()
-        logger.exception(f"Fetchong chat history failed {e}")
+        logger.exception(f"Fetching chat history failed {e}")
     return result, session_chat_list
 
 
@@ -506,10 +579,24 @@ def create_session_token(tenant_brand):
     payload = {
         "tenant_id": str(tenant_brand.tenant_id),
         "tenant_brand_id": str(tenant_brand.id),
+        "brand_tone": tenant_brand.tone.value,
         "api_key": str(tenant_brand.api_key),
         "session_id": session_id,
     }
-    access_expiry = str(int(time.time()) + 15)
+    access_expiry = str(int(time.time()) + ACCESS_TOKEN_EXPIRE_MINUTES * 60)
+    token = auth.create_chat_access_token(payload)
+    refresh_token = auth.create_chat_access_token(payload)
+    return token, refresh_token, access_expiry
+
+def create_session_token_from_payload(payload_data):
+    payload = {
+        "tenant_id": str(payload_data['tenant_id']),
+        "tenant_brand_id": str(payload_data['tenant_brand_id']),
+        "brand_tone": payload_data['brand_tone'],
+        "api_key": str(payload_data['api_key']),
+        "session_id": payload_data['session_id'],
+    }
+    access_expiry = str(int(time.time()) + ACCESS_TOKEN_EXPIRE_MINUTES * 60)
     token = auth.create_chat_access_token(payload)
     refresh_token = auth.create_chat_access_token(payload)
     return token, refresh_token, access_expiry
@@ -556,33 +643,28 @@ def get_previous_messages(session_id, db):
         message = str(e)
     return result, message, previous_messages_list
 
-def get_user_sessions_requests(tenant_id, db):
+def get_user_tickets(tenant_id, db):
     result = False
     message = ''
-    session_list = list()
+    ticket_list = list()
     try:
-        chat_requests =  (
-            db.query(models.AgentChatHistory.session_id)
-            .join(
-                models.UserSession,
-                models.AgentChatHistory.session_id == models.UserSession.id
-            )
-            .filter(
-                models.UserSession.tenant_id == tenant_id,
-                models.AgentChatHistory.is_accepted == False
-            )
-        )
-        if chat_requests.first():
-            sessions = db.query(models.UserSession).filter(models.UserSession.tenant_id==tenant_id).filter(models.UserSession.id.in_(chat_requests)).order_by(models.UserSession.id.desc())
-            for session in sessions:
+        open_tickets = db.query(models.AgentChatTickets).filter(models.AgentChatTickets.tenant_id==tenant_id).order_by(desc(models.AgentChatTickets.ticket_id)).all()
+        if open_tickets:
+            for ticket in open_tickets:
                 session_dict = dict()
-                last_message = db.query(models.ChatHistory).filter(models.ChatHistory.session_id == session.id).order_by(desc(models.ChatHistory.created_at)).first()
+                last_message = db.query(models.ChatHistory).filter(models.ChatHistory.ticket_id == ticket.ticket_id).order_by(desc(models.ChatHistory.timestamp)).first()
+                agent = db.query(models.TenantAgent).filter(models.TenantAgent.id==ticket.agent_id).first()
+                session = db.query(models.UserSession).filter(models.UserSession.id==ticket.session_id).first()
+                tenant_brand_id = db.query(models.TenantBrand).filter(models.TenantBrand.id==session.tenant_brand_id).first()
                 if last_message:
-                    session_dict = {'session_id': session.id,
+                    session_dict = {'ticket_id': ticket.ticket_id,
+                                    'tenant_brand_id': tenant_brand_id.id,
                                     'last_message': last_message.message,
-                                    'created_at': session.created_at
+                                    'created_at': ticket.created_at,
+                                    'status': ticket.status.value,
+                                    'agent': agent.agent_name if agent else ''
                                     }
-                    session_list.append(session_dict)
+                    ticket_list.append(session_dict)
             result = True
         else:
             message = "No sessions found"
@@ -590,7 +672,7 @@ def get_user_sessions_requests(tenant_id, db):
     except Exception as e:
         db.rollback()
         logger.exception(f"Fetching chat sessions failed {e}")
-    return result, message, session_list
+    return result, message, ticket_list
 
 def refresh_tenant_token(refresh_token, tenant_id, response, db):
     result = False
@@ -613,12 +695,82 @@ def refresh_tenant_token(refresh_token, tenant_id, response, db):
 
         response.set_cookie("access_token", new_access, httponly=True)
         response.set_cookie("refresh_token", new_refresh, httponly=True)
-        response.set_cookie(key="access_expiry", value=str(int(time.time()) + ACCESS_TOKEN_EXPIRE_MINUTES * 60), path="/"
-)
+        response.set_cookie(key="access_expiry", value=str(int(time.time()) + ACCESS_TOKEN_EXPIRE_MINUTES * 60), path="/")
+
         result = True
     except Exception as e:
         logger.exception(f"Refresh failed:  {e}")
     return result, response
+
+def get_dashboard_data(tenant_id, db):
+    result = False
+    dashboard_info = dict()
+    try:
+        tenant = db.query(models.Tenant).filter(models.Tenant.tenant_id==tenant_id).first()
+        total_sessions = db.query(models.UserSession).filter(models.UserSession.tenant_id == tenant_id).count()
+
+        open_tickets = db.query(models.AgentChatTickets).filter(models.AgentChatTickets.tenant_id == tenant_id).filter(models.AgentChatTickets.status == 'Open').count()
+        active_tickets = db.query(models.AgentChatTickets).filter(models.AgentChatTickets.tenant_id == tenant_id).filter(models.AgentChatTickets.status == 'Inprogress').count()
+        closed_tickets = db.query(models.AgentChatTickets).filter(models.AgentChatTickets.tenant_id == tenant_id).filter(models.AgentChatTickets.status == 'Closed').count()
+
+        brands = db.query(models.TenantBrand).filter(models.TenantBrand.tenant_id == tenant_id).filter(models.TenantBrand.is_active==True).count()
+        agents = db.query(models.TenantAgent).filter(models.TenantAgent.tenant_id == tenant_id).count()
+        documents = db.query(models.TenantDocument).filter(models.TenantDocument.tenant_id == tenant_id).count()
+
+        sessions_per_day = (
+            db.query(
+                func.date(models.UserSession.created_at).label("date"),
+                func.count(models.UserSession.id).label("count")
+            )
+            .filter(models.UserSession.tenant_id == tenant_id)
+            .group_by(func.date(models.UserSession.created_at))
+            .all()
+        )
+        sessions_per_brand = db.query(models.TenantBrand.id.label("brand_id"),models.TenantBrand.brand_name,models.TenantBrand.logo,func.count(models.UserSession.id).label("session_count")
+                        ).outerjoin(models.UserSession,models.UserSession.tenant_brand_id == models.TenantBrand.id
+                        ).group_by(models.TenantBrand.id,models.TenantBrand.brand_name,models.TenantBrand.logo
+                        ).filter(models.TenantBrand.tenant_id==tenant_id).filter(models.TenantBrand.is_active==True)
+        session_dates = list()
+        session_counts = list()
+        for row in sessions_per_day:
+            session_dates.append(row.date.strftime("%Y-%m-%d"))
+            session_counts.append(row.count)
+
+        token_usage_per_day = (
+            db.query(
+                func.date(models.TockenUsage.date).label("date"),
+                func.sum(models.TockenUsage.token_count).label("count")
+            )
+            .filter(models.TockenUsage.tenant_id == tenant_id)
+            .group_by(func.date(models.TockenUsage.date))
+            .all()
+        )
+        token_dates = list()
+        token_usage = list()
+        for row in token_usage_per_day:
+            token_dates.append(row.date.strftime("%Y-%m-%d"))
+            token_usage.append(row.count)
+        print("token_usage      ",token_usage)
+        dashboard_info = {"tenant_name": tenant.company_name,
+                          "username": tenant.username,
+                          "total_sessions": total_sessions,
+                          "total_brands": brands,
+                          "total_agents": agents,
+                          "total_files": documents,  
+                          "total_tickets": open_tickets + active_tickets + closed_tickets,
+                          "open_tickets": open_tickets,
+                          "active_tickets": active_tickets,
+                          "closed_tickets": closed_tickets,  
+                          "session_dates": session_dates,
+                          "session_counts": session_counts,  
+                          "token_dates": token_dates,
+                          "sessions_per_brand": sessions_per_brand,
+                          "token_usage": token_usage
+                             }
+        result = True
+    except Exception as e:
+        logger.exception(f"Dashboard info fetch failed {e}")
+    return result, dashboard_info
 
 def save_user_session(session_id, tenant_id, tenant_brand_id, db):
     result = False
@@ -646,6 +798,81 @@ def save_user_session(session_id, tenant_id, tenant_brand_id, db):
     logger.info(f"Session Status: {result}, Message: {message}")
     return result
 
+async def publish_to_services(payload, query, manager):
+    message_info = dict()
+    alert_info = dict()
+    result = False
+    message = ''
+    try:
+        message_info = {"tenant_id": payload['tenant_id'],
+                        "tenant_brand_id": payload['tenant_brand_id'],
+                        "brand_tone": payload['brand_tone'],
+                        "session_id": payload['session_id'],
+                        "sender": query["sender"],
+                        "message": query["message"],
+                        "timestamp": datetime.now().isoformat(), 
+                        "ticket_id": query["ticket_id"]
+                        }
+        if 'human' in query.get("message", "").lower() or 'agent' in query.get("message", "").lower():
+            message_info["event"] = "AGENT_MESSAGE"
+
+            alert_info = {"session_id": payload['session_id'],
+                        "event": "AGENT_MESSAGE",
+                        "message": "The agent will contact you shortly. Please keep the patience.",
+                        "sender": "Bot"}
+            await manager.broadcast_session(alert_info)
+        else:
+            message_info["event"] = query["event"]
+
+        if message_info.get("event" ) == "BOT_MESSAGE":
+            bot_result, bot_message = kafka_producer.publish_message_to_ai_service(message_info)
+            logger.info(f"Sucess: {bot_result} - Message: {bot_message}")
+            result = True
+
+        elif message_info.get("event") == "AGENT_MESSAGE":
+            agent_result, agent_message = kafka_producer.publish_message_to_agent_service(message_info)
+            logger.info(f"Sucess: {agent_result} - Message: {agent_message}") 
+            result = True
+
+        if message_info["sender"]!='System':
+            db_result, db_message = kafka_producer.publish_message_to_db(message_info)
+            logger.info(f"Sucess: {db_result} - Message: {db_message}") 
+            result = True
+
+        if result:
+            message = "Published succesfully"
+
+    except Exception as e:
+        logger.exception("Saving chat history failed")
+        message = str(e)
+        result = False
+    logger.info(f"Session Status: {result}, Message: {message}")
+    return result, message
+
+
+def get_chat_history(session_id, db):
+    result = False
+    chat_history_list = []
+    try:
+        chat_history = db.query(models.ChatHistory).filter(models.ChatHistory.session_id == session_id).order_by(models.ChatHistory.timestamp).all()
+        for chat in chat_history:
+            chat_dict = dict()
+            chat_dict = {'sender': chat.sender.value,
+                         'message': chat.message,
+                         'timestamp': chat.timestamp
+                         }
+            chat_history_list.append(chat_dict)
+        result = True
+    except Exception as e:
+        logger.exception(f"Fetching chat history failed {e}")
+    return result, chat_history_list
+
+def is_history_available(session_id, brand_id, db):
+    try:
+        return db.query(models.UserSession).filter(models.UserSession.id == session_id).filter(models.UserSession.tenant_brand_id == brand_id).first() is not None
+    except Exception as e:
+        logger.exception(f"Fetching chat history failed: {e}")
+        return False
 
 
 

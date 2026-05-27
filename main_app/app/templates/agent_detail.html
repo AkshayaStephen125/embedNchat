@@ -8,15 +8,17 @@
 <body>
 
 <div class="sidebar">
-  <div class="sidebar-logo">
-    <img src="/static/images/logo.png">
-  </div>
-  <a href="/dashboard">Dashboard</a>
-<a href="/upload">File Uploads</a>
-<a href="/brands">Brands</a>
-<a href="/agents" class="active">Agents</a>
-<a href="/sessions">User Chat Sessions</a>
-<a href="/chat-requests">User Chat Requests</a>
+    <div class="sidebar-logo">
+        <img src="/static/images/logo.png" alt="TenantAI Logo">
+    </div>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/upload">File Uploads</a>
+    <a href="/brands">Brands</a>
+    <a href="/agents" class="active">Agents</a>
+    <a href="/sessions">User Chat Sessions</a>
+    <a href="/chat-requests">User Tickets</a>
+</div>
+f="/chat-requests">User Chat Requests</a>
 </div>
 
 <div class="header">
@@ -31,9 +33,9 @@
     <div class="detail-row"><strong>Email:</strong> {{ agent.email }}</div>
     <div class="detail-row"><strong>Username:</strong> {{ agent.username }}</div>
     <div class="detail-row"><strong>Created At:</strong> {{ agent.created_at }}</div>
-
+<br>
     <div class="actions">
-      <a href="/agents/edit/{{ agent.id }}" class="primary-btn">Edit</a>
+      <a href="/agents/edit/{{ agent.agent_id }}" class="primary-btn">Edit</a>
     </div>
 
   </div>

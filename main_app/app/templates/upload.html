@@ -108,24 +108,43 @@
       background: #fef9c3;
       color: #854d0e;
     }
+
+    .loader {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #0f172a;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
 
 <!-- Sidebar -->
 <div class="sidebar">
-  <div class="sidebar-logo">
-    <img src="static/images/logo.png" alt="TenantAI Logo">
-  </div>
-  <a href="/dashboard">Dashboard</a>
-  <a href="/upload">File Uploads</a>
-  <a href="/">User Chat History</a>
+    <div class="sidebar-logo">
+        <img src="/static/images/logo.png" alt="TenantAI Logo">
+    </div>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/upload" class="active">File Uploads</a>
+    <a href="/brands">Brands</a>
+    <a href="/agents">Agents</a>
+    <a href="/sessions">User Chat Sessions</a>
+    <a href="/chat-requests">User Tickets</a>
 </div>
 
 <!-- Header -->
 <div class="header">
   <h1>File Uploads</h1>
-  <div class="tenant-info">Tenant: {{ tenant }}</div>
+  <div class="tenant-info">Tenant: {{ tenant_name }}</div>
 </div>
 
 <!-- Main -->
@@ -133,7 +152,7 @@
 
   <!-- Upload Card -->
   <div class="card">
-    <form method="post" action="/upload" enctype="multipart/form-data">
+    <form id="uploadForm" enctype="multipart/form-data">
 
       <input type="text" name="name" placeholder="Enter file name" required>
 
@@ -189,31 +208,31 @@
         </tr>
       </thead>
 
-      <tbody>
-        {% for file in files %}
-        <tr>
-          <td class="file-name">{{ file.name }}</td>
+      <tbody id="fileTableBody">
+  {% for file in files %}
+  <tr>
+    <td class="file-name">{{ file.name }}</td>
 
-          <td>
-            <a href="{{ file.file_url }}" target="_blank">
-              View File
-            </a>
-          </td>
+    <td>
+      <a href="{{ file.file_url }}" target="_blank">
+        View File
+      </a>
+    </td>
 
-          <td>{{ file.brand_name }}</td>
+    <td>{{ file.brand_name }}</td>
 
-          <td>
-            {% if file.status == "Processed" %}
-              <span class="badge success">Processed</span>
-            {% else %}
-              <span class="badge warning">Processing</span>
-            {% endif %}
-          </td>
+    <td>
+      {% if file.status == "PROCESSED" %}
+        <span class="badge success">Processed</span>
+      {% else %}
+        <span class="badge warning">Processing</span>
+      {% endif %}
+    </td>
 
-          <td>{{ file.uploaded_at }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
+    <td>{{ file.uploaded_at }}</td>
+  </tr>
+  {% endfor %}
+</tbody>
     </table>
   </div>
 
@@ -223,19 +242,119 @@
 <script src="/static/script/auth.js"></script>
 
 <script>
-  const selectAll = document.getElementById("selectAll");
-  const checkboxes = document.querySelectorAll(".brand-checkbox");
+const BASE_URL = "http://localhost:8000";
+const WS_URL = BASE_URL.replace("http", "ws") + "/ws/notify";
 
-  selectAll.addEventListener("change", function() {
-    checkboxes.forEach(cb => cb.checked = this.checked);
-  });
+const tenantId = "{{ tenant_id }}"; // Jinja
 
-  checkboxes.forEach(cb => {
-    cb.addEventListener("change", function() {
-      const allChecked = [...checkboxes].every(c => c.checked);
-      selectAll.checked = allChecked;
+const tableBody = document.getElementById("fileTableBody");
+const form = document.getElementById("uploadForm");
+
+// ==========================
+// 🔥 WebSocket
+// ==========================
+const ws = new WebSocket(WS_URL + "?tenant_id=" + tenantId);
+
+ws.onopen = function() {
+    console.log("WebSocket connected");
+};
+
+ws.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log("WS DATA:", data);
+
+    // Example expected:
+    // { tenant_id: 1, uploaded_file: "...", status: true }
+
+    updateRowStatus(data);
+};
+
+
+// ==========================
+// 🔥 Handle Upload (NO RELOAD)
+// ==========================
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    const tempId = "row_" + Date.now();
+    const fileName = formData.get("name");
+
+    const row = document.createElement("tr");
+    const selectedBrands = [];
+
+    document.querySelectorAll(".brand-checkbox:checked").forEach(cb => {
+        if (cb.id === "selectAll") return;
+
+        const label = document.querySelector(`label[for="${cb.id}"]`);
+        if (label) {
+            selectedBrands.push(label.innerText.trim());
+        }
     });
-  });
+
+    const brandText = selectedBrands.join(", ");
+
+    row.id = tempId;
+
+    row.innerHTML = `
+        <td class="file-name">${fileName}</td>
+        <td>Uploading...</td>
+        <td>${brandText || "-"}</td>
+        <td>
+            <span class="badge warning">
+                Processing <span class="loader"></span>
+            </span>
+        </td>
+        <td>${new Date().toLocaleString()}</td>
+    `;
+
+    tableBody.prepend(row);
+
+    try {
+        const response = await fetch("/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+        console.log("Upload result:", result);
+
+        // Optionally update file link later
+        row.setAttribute("data-file", result.file_path);
+
+    } catch (err) {
+        console.error(err);
+    }
+
+    form.reset();
+});
+
+
+function updateRowStatus(data) {
+    const fileName = data.name
+    const uploadedFile = data.uploaded_file;
+    console.log("uploadedFile   ",uploadedFile
+    )
+
+    // find matching row
+    const rows = document.querySelectorAll("tr");
+
+    rows.forEach(row => {
+        const fileCell = row.querySelector(".file-name");
+
+        if (!fileCell) return;
+
+        if (fileName.includes(fileCell.innerText)) {
+
+            row.children[3].innerHTML =
+                `<span class="badge success">Processed</span>`;
+
+            row.children[1].innerHTML =
+                `<a href="${BASE_URL}/${uploadedFile}" target="_blank">View File</a>`;
+        }
+    });
+}
 </script>
 
 </body>

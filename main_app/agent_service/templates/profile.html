@@ -1,61 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Agent Profile</title>
+
   <link rel="stylesheet" href="static/css/styles.css">
+  <link rel="stylesheet" href="static/css/profile.css">
+
+
 </head>
+
 <body>
 
+  <!-- SIDEBAR -->
 <div class="sidebar">
   <div class="sidebar-logo">
-    <img src="static/images/logo.png" alt="TenantAI Logo">
+    <img src="/static/images/logo/logo.png" alt="TenantAI Logo">
   </div>
 
- <a href="/">Dashboard</a>
-  <a href="/chat-requests">Chat Requests</a>
-  <a href="/chat-history">Chat History</a>
-  <a href="/profile" class="active">Profile</a>
+  <a href="/">Dashboard</a>
+  <a href="/profile" class="active">My Profile</a>
+  <a href="/chat-requests/open">Open Tickets</a>
+  <a href="/chat-requests/active">Active Tickets</a>
+  <a href="/chat-requests/closed">Closed Tickets</a>
 </div>
 
-<div class="header">
-  <h1>Profile</h1>
-  <div>Tenant: {{tenant_name}}</div>
-</div>
+  <!-- CONTENT -->
+  <div class="content">
 
-<div class="main">
+    <!-- HEADER -->
+    <div class="header">
+      <h1>Profile</h1>
 
-  <div class="profile-card">
-    <h2>Agent Details</h2>
-
-    <div class="profile-row">
-      <label>Name:</label>
-      <span>{{agent_name}}</span>
+      <div>
+        Tenant: {{tenant.company_name}}
+      </div>
     </div>
 
-    <div class="profile-row">
-      <label>Tenant Company:</label>
-      <span>{{tenant_name}}</span>
+    <!-- MAIN -->
+    <div class="main">
+
+      <div class="profile-card">
+
+        <div class="profile-top">
+
+          <div class="profile-title">
+            <h2>{{tenant_agent.agent_name}}</h2>
+            <p>Agent Account Information</p>
+          </div>
+
+          <div class="profile-avatar">
+            {{tenant_agent.agent_name[0]}}
+          </div>
+
+        </div>
+
+        <div class="profile-details">
+
+          <div class="profile-box">
+            <label>Full Name</label>
+            <span>{{tenant_agent.agent_name}}</span>
+          </div>
+
+          <div class="profile-box">
+            <label>Tenant Company</label>
+            <span>{{tenant.company_name}}</span>
+          </div>
+
+          <div class="profile-box">
+            <label>Username</label>
+            <span>{{tenant_agent.username}}</span>
+          </div>
+
+          <div class="profile-box">
+            <label>Email Address</label>
+            <span>{{tenant_agent.email}}</span>
+          </div>
+
+        </div>
+<br>
+
+      </div>
+
     </div>
 
-    <div class="profile-row">
-      <label>Username:</label>
-      <span>{{username}}</span>
-    </div>
-
-    <div class="profile-row">
-      <label>Email:</label>
-      <span>{{email}}</span>
-    </div>
-
-    <div class="profile-row">
-      <label>Password:</label>
-      <span>********</span>
-    </div>
-
-    <button>Edit Profile</button>
   </div>
-
-</div>
 
 </body>
 </html>

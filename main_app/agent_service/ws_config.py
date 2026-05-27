@@ -1,9 +1,8 @@
-from fastapi import WebSocket, WebSocketDisconnect, APIRouter, Depends
+from fastapi import WebSocket, WebSocketDisconnect, APIRouter
 from connection_manager import manager
 import auth
 from logger import logger
 import services
-from sqlalchemy.orm import Session
 from db_config import get_db
 import kafka_producer
 

@@ -142,10 +142,10 @@ body {
 .sidebar-logo img {
   width: 76px;
   height: 76px;
-  border-radius: 5%;
-  object-fit: cover;
+  border-radius: 8px;
   border: 1px solid #e5e7eb;
 }
+
 
 
 
@@ -281,4 +281,34 @@ button.secondary {
   color: #6b7280;
 }
 
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
 
+/* Chart layout */
+.dashboard-chart-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* Chart sizes */
+.chart-large {
+  height: 350px;
+}
+
+.chart-small {
+  height: 350px;
+}
+
+.active{
+  font-weight: 500;
+}
+
+/* Canvas fix */
+canvas {
+  max-width: 100%;
+  height: 250px !important;
+}

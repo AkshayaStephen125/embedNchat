@@ -3,8 +3,10 @@ import json
 import rag
 import time
 from logger import logger
+from datetime import datetime
 from dotenv import load_dotenv
 from kafka import KafkaConsumer, KafkaProducer
+import random
 
 
 load_dotenv()
@@ -56,28 +58,38 @@ def get_from_kafka():
         for message_session in consumer:
             message_query=message_session.value
 
-            print('message_query ',message_query)
+            logger.info(f'Received from topic KAFKA_TOPIC_REQ :{message_query}')
             message_response = dict()
+            message_response['type'] = "message"
             message_response['session_id'] = message_query['session_id']
             message_response['tenant_id'] = message_query['tenant_id']
             message_response['tenant_brand_id'] = message_query['tenant_brand_id']
             message_response['brand_tone'] = message_query['brand_tone']
             message_response["sender"]="Bot"
-            message_response["event"]="BOT_MESSAGE"
             message_response["message"]=""
 
             if 'human' in message_query.get("message").lower() or 'agent' in message_query.get("message").lower():
+                message_response["event"]="AGENT_MESSAGE"
                 message_response["message"]="The agent will contact you shortly. Please keep the patience."
                 producer.send(KAFKA_TOPIC_AGENT, value=message_query)
             else:
+                token_used = 0
+                message_response["event"]="BOT_MESSAGE"
                 relevant_chunks = rag.retrieve_relevant_chunks(int(message_query['tenant_id']), int(message_query['tenant_brand_id']), message_query.get("message"))
-                print('relevant_chunks      ',relevant_chunks)
-                answer = rag.generate_answer(message_query.get("message"), message_query['brand_tone'], relevant_chunks)
+                if relevant_chunks:
+                    answer, token_used = rag.generate_answer(message_query.get('session_id'), message_query.get("message"), message_query['brand_tone'], relevant_chunks)
+                else:
+                    answer = rag.no_context_answers[random.randint(0,len(rag.no_context_answers)-1)]
                 if answer:
                     message_response["message"]=answer
+                    message_response["token_used"]=token_used
+                    message_response['timestamp'] = datetime.now().isoformat()
                 producer.send(STORE_MESSAGE_KAFKA_TOPIC, value=message_response)
-            print('message_response', message_response)
+                logger.info(f'Sending to topic STORE_MESSAGE_KAFKA_TOPIC')
+
             producer.send(KAFKA_TOPIC_RES, value=message_response)
+            logger.info(f'Sending to topic KAFKA_TOPIC_RES')
+
 
         result=True
     except Exception as e:

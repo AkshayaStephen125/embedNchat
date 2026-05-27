@@ -137,7 +137,7 @@
     }
 
     .accept-container button:hover {
-        background: white;
+        background: #142c52;
     }
 
     </style>
@@ -145,13 +145,15 @@
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-logo">
-        <img src="/static/images/logo.png" alt="TenantAI Logo">
-    </div>
-     <a href="/">Dashboard</a>
-  <a href="/chat-requests" class="active">Chat Requests</a>
-  <a href="/chat-history">Chat History</a>
-  <!-- <a href="/profile">Profile</a> -->
+  <div class="sidebar-logo">
+    <img src="/static/images/logo/logo.png" alt="TenantAI Logo">
+  </div>
+
+  <a href="/">Dashboard</a>
+  <a href="/profile">My Profile</a>
+  <a href="/chat-requests/open">Open Tickets</a>
+  <a href="/chat-requests/active">Active Tickets</a>
+  <a href="/chat-requests/closed">Closed Tickets</a>
 </div>
 
 <div class="header">
@@ -164,12 +166,13 @@
     <div class="chat-wrapper">
 
         <div class="chat-header">
-            Session ID: {{ session_id }}
+            Session ID: {{ ticket_id }}
         </div>
 
         <div class="chat-messages">
 
             {% for message in messages %}
+            {{message.ticket_id}}
                 {% if message.sender == "USER" %}
                  <div class="message-row user">
                     <div class="message user-message">
@@ -204,13 +207,17 @@
 
         <!-- Agent Reply Form -->
         <div class="chat-input-area">
-            <input id="message_txt" type="text" name="message" placeholder="Type your reply as Agent..." {% if not is_accepted %}disabled{% endif %}>
-            <button id="send_btn" onclick=sendMessage() {% if not is_accepted %}disabled{% endif %}>Send</button>
+            <input id="message_txt" type="text" name="message" placeholder="Type your reply as Agent..." {% if ticket_status == 'INPROGRESS' %}{%else%}disabled{% endif %}>
+            <button id="send_btn" onclick=sendMessage() {% if ticket_status == 'INPROGRESS' %}{%else%}disabled{% endif %}>Send</button>
         </div>
-        {% if not is_accepted %}<div class="accept-container">
-                <button id="accept_btn" onclick="acceptRequest()">Accept Request</button>
+        <div class="accept-container">
+        {% if ticket_status == 'OPEN' %}
+                <button id="accept_btn" onclick="acceptRequest()">Accept Ticket</button>
+        {% elif ticket_status == 'INPROGRESS' %}        
+                <button id="close_btn" onclick="closeRequest()">Close Ticket</button>
+        {% endif %}
+
     
-                <div id="alert" style="padding: 20px;"></div>{% endif %}
 </div>
 
     </div>
@@ -222,7 +229,8 @@
 
     const BASE_URL = "http://127.0.0.1:8001";
     const WS_URL = BASE_URL.replace("http", "ws") + "/ws/agent";
-    const SESSION_ID = "{{ session_id }}";
+    const TICKET_ID = "{{ ticket_id }}";
+    const SESSION_ID = "{{session_data.session_id}}"
     const TENANT_ID = "{{session_data.tenant_id}}"
     const TENANT_BRAND_ID = "{{session_data.tenant_brand_id}}"
 
@@ -231,17 +239,15 @@
 
     const input = document.querySelector('input[name="message"]');
     const text = input.value.trim();
-    console.log("text       ",text)
     if (!text) return;
     addMessage(text, "AGENT");
     input.value = "";
 
     try {
-        ws.send(JSON.stringify({ message: text, sender: "Agent", tenant_id: TENANT_ID, tenant_brand_id: TENANT_BRAND_ID}))
+        ws.send(JSON.stringify({ message: text, ticket_id: TICKET_ID,sender: "Agent", tenant_id: TENANT_ID, tenant_brand_id: TENANT_BRAND_ID}))
 
     } catch(error) {
-        // removeTyping();
-        // addMessage("Unable to reach server. "+error, "bot");
+        addMessage("Unable to reach server. "+error, "bot");
     }
     }
     document.getElementById("message_txt").addEventListener("keypress", e => {
@@ -251,13 +257,21 @@
     function addMessage(message_text, sender_type){
         const chatBox = document.querySelector(".chat-messages");
         const currentDate = new Date();
+        const formattedTime = currentDate.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+         });
         if(sender_type === "USER"){
             chatBox.insertAdjacentHTML("beforeend",
             `<div class="message-row user">
                     <div class="message user-message"> 
                         ${message_text}
                         <div class="message-time">`
-                           + currentDate +
+                           + formattedTime +
                         `</div>
                     </div>
                         </div>`)
@@ -268,7 +282,7 @@
                     <div class="message agent-message">
                        ${message_text}
                         <div class="message-time">`
-                           + currentDate +
+                           + formattedTime +
                         `</div>
                     </div>
                     </div>`)
@@ -279,22 +293,23 @@
     }
 
     function acceptRequest() {
-        const SESSION_ID = "{{ session_id }}";
+        const TICKET_ID = "{{ ticket_id }}";
+        const SESSION_ID = "{{ session_data.session_id }}";
         const BASE_URL = "http://127.0.0.1:8001"
     fetch(`${BASE_URL}/accept-request`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ session_id: SESSION_ID,
+        body: JSON.stringify({  ticket_id: TICKET_ID,
+                                session_id: SESSION_ID,
                                 tenant_id: TENANT_ID,
                                 tenant_brand_id: TENANT_BRAND_ID })
     })
     .then(res => res.json())
     .then(data => {
         if (data.result) {
-            enableChat();
-
+           window.location.reload();  
         }
         else{
             document.getElementById("alert").innerHTML = data.message
@@ -303,16 +318,48 @@
     .catch(err => console.error(err));
 }
 
-function enableChat() {
-    document.getElementById("message_txt").disabled = false;
-    document.getElementById("send_btn").disabled = false;
-
-
-    document.getElementById("accept_btn").style.display = "none";
+function closeRequest() {
+        const TICKET_ID = "{{ ticket_id }}";
+        const SESSION_ID = "{{ session_data.session_id }}";
+        const BASE_URL = "http://127.0.0.1:8001"
+    fetch(`${BASE_URL}/close-request`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+         body: JSON.stringify({ ticket_id: TICKET_ID,
+                                session_id: SESSION_ID,
+                                tenant_id: TENANT_ID,
+                                tenant_brand_id: TENANT_BRAND_ID })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("data   ",data)
+        if (data.result) {
+                      window.location.reload();  
+        }
+        
+    })
+    .catch(err => console.error(err));
 }
 
+// function enableChat() {
+//     document.getElementById("message_txt").disabled = false;
+//     document.getElementById("send_btn").disabled = false;
+
+
+//     document.getElementById("accept_btn").style.display = "none";
+// }
+
+// function disableChat() {
+//     document.getElementById("message_txt").disabled = true;
+//     document.getElementById("send_btn").disabled = true;
+
+
+//     document.getElementById("close_btn").style.display = "none";
+// }
+
 function initWebSocket() {
-    console.log("eeee   ",WS_URL + "?session_id=" + SESSION_ID)
     ws = new WebSocket(WS_URL + "?session_id=" + SESSION_ID);
 
     ws.onopen = () => {

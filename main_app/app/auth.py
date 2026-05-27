@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from jose import JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 from fastapi import HTTPException
 from dotenv import load_dotenv
 from pwdlib import PasswordHash
@@ -51,6 +51,9 @@ def verify_token(token: str, token_type: str):
         if payload.get("type") != token_type:
             raise HTTPException(status_code=401, detail="Invalid token type")
         return payload
-    except JWTError:
+    except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
+    except JWTError as e:
+        raise HTTPException(status_code=401, detail="Invalid or expired tokennnn"+str(e))
+
 

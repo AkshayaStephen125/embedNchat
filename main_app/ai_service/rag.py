@@ -11,6 +11,7 @@ from sentence_transformers import SentenceTransformer
 from groq import Groq
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+HF_TOKEN = os.environ.get("HF_TOKEN")
 LIMIT_COUNT = int(os.environ.get("LIMIT_COUNT"))
 
 
@@ -19,7 +20,8 @@ embedding_model = None
 def get_model():
     global embedding_model
     if embedding_model is None:
-        embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+        embedding_model = SentenceTransformer("all-MiniLM-L6-v2",
+                                              token=HF_TOKEN)
     return embedding_model
 
 chroma_client = chromadb.PersistentClient(
@@ -40,12 +42,24 @@ def get_file_object_from_base64(data):
 
 
 def split_to_chunks(uploaded_file):
-    reader = PdfReader(uploaded_file)
     extracted_text = ""
     chunks = []
 
-    for page in reader.pages:
-        extracted_text += page.extract_text()
+    file_name = uploaded_file.lower()
+
+    if file_name.endswith(".pdf"):
+        reader = PdfReader(uploaded_file)
+
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                extracted_text += page_text
+
+    elif file_name.endswith(".txt"):
+        with open(uploaded_file, "r", encoding="utf-8") as file:
+            extracted_text = file.read()
+    else:
+        raise ValueError("Only PDF and TXT files are supported.")
     
     for i in range(0, len(extracted_text), 400):
         chunks.append(extracted_text[i:i+500])
@@ -120,8 +134,6 @@ def get_message_history(session_id):
 
 
 def retrieve_relevant_chunks(tenant_id:int, tenant_brand_id:int, query, top_k=5):
-    print('tenant_brand_id ', tenant_brand_id)
-    print('query ', query)
     query_embedding = get_model().encode([query]).tolist()
     where_filter = {
         "$and": [
@@ -144,7 +156,7 @@ def retrieve_relevant_chunks(tenant_id:int, tenant_brand_id:int, query, top_k=5)
 client = Groq(api_key=GROQ_API_KEY)
 
 def generate_answer(session_id, query, brand_tone, context_chunks):
-    print("context_chunks   ",context_chunks)
+    token_used = 0
     context = "\n\n".join(context_chunks)
 
     tone_instruction = get_tone_instruction(brand_tone)
@@ -181,7 +193,15 @@ def generate_answer(session_id, query, brand_tone, context_chunks):
         temperature=0.2
     )
 
-    return response.choices[0].message.content
+    if response.usage:
+        token_used = response.usage.total_tokens
+
+    return response.choices[0].message.content, token_used
+
+no_context_answers = ["I'm sorry, I couldn’t find relevant information for your request. Could you please rephrase your question?",
+                      "I don’t have enough information to answer that right now. You can try asking differently or connect with a support agent.",
+                      "I couldn't locate an exact answer from the available data. Would you like me to raise a support request for you?",
+                      "Sorry, I’m unable to find a matching answer at the moment. Please try again or reach out to our support team."]
 
 
 

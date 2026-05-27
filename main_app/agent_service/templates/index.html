@@ -2,88 +2,408 @@
 <html>
 <head>
   <title>Agent Dashboard</title>
+
   <link rel="stylesheet" href="static/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+
+    .dashboard-grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+      margin-top:20px;
+    }
+
+    .ticket-mini-card{
+      padding:14px;
+      border-bottom:1px solid #eee;
+      transition:0.2s ease;
+    }
+
+    .ticket-mini-card:hover{
+      background:#f8faff;
+    }
+
+    .ticket-mini-card:last-child{
+      border-bottom:none;
+    }
+
+    .ticket-title{
+      font-weight:600;
+      color:#222;
+      margin-bottom:6px;
+    }
+
+    .ticket-desc{
+      color:#666;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .ticket-meta{
+      margin-top:8px;
+      font-size:12px;
+      color:#999;
+    }
+
+    .brand-ticket-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 0;
+      border-bottom:1px solid #eee;
+    }
+
+    .brand-ticket-row:last-child{
+      border-bottom:none;
+    }
+
+    .brand-info{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .brand-logo{
+      width:42px;
+      height:42px;
+      border-radius:10px;
+      object-fit:cover;
+      background:#f5f5f5;
+      padding:4px;
+    }
+
+    .brand-name{
+      font-weight:600;
+      color:#222;
+    }
+
+    .ticket-count{
+      background:#0b1f3a;
+      color:white;
+      padding:6px 12px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:600;
+    }
+
+    /* PIE CHART FIX */
+
+    .pie-chart-card{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .pie-chart-wrapper{
+      width:280px;
+      height:280px;
+      margin:auto;
+    }
+
+    .pie-chart-wrapper canvas{
+      width:100% !important;
+      height:100% !important;
+    }
+
+    @media(max-width:768px){
+
+      .dashboard-grid-2{
+        grid-template-columns:1fr;
+      }
+
+      .pie-chart-wrapper{
+        width:220px;
+        height:220px;
+      }
+
+    }
+
+  </style>
+
 </head>
+
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
+
   <div class="sidebar-logo">
-    <img src="static/images/logo/logo.png" alt="TenantAI Logo">
+    <img src="/static/images/logo/logo.png" alt="TenantAI Logo">
   </div>
 
   <a href="/" class="active">Dashboard</a>
-  <a href="/chat-requests">Chat Requests</a>
-  <a href="/chat-history">Chat History</a>
-  <!-- <a href="/profile">Profile</a> -->
+  <a href="/profile">My Profile</a>
+  <a href="/chat-requests/open">Open Tickets</a>
+  <a href="/chat-requests/active">Active Tickets</a>
+  <a href="/chat-requests/closed">Closed Tickets</a>
+
 </div>
 
+
+<!-- HEADER -->
 <div class="header">
   <h1>Agent Dashboard</h1>
   <div>Tenant: {{tenant_name}}</div>
 </div>
 
+
+<!-- MAIN -->
 <div class="main">
 
-  <!-- Stats Cards -->
+  <!-- STATS -->
   <div class="grid-4">
-    <div class="card stat">
-      <h3>Total Requests</h3>
-      <p>{{total_requests}}</p>
-    </div>
 
     <div class="card stat">
-      <h3>Completed</h3>
-      <p>{{completed_requests}}</p>
+      <h3>Total Requests</h3>
+      <p>{{total}}</p>
     </div>
 
     <div class="card stat">
       <h3>Open</h3>
-      <p>{{open_requests}}</p>
+      <p>{{open}}</p>
+    </div>
+
+    <div class="card stat">
+      <h3>Active</h3>
+      <p>{{active}}</p>
     </div>
 
     <div class="card stat">
       <h3>Closed</h3>
-      <p>{{closed_requests}}</p>
+      <p>{{closed}}</p>
     </div>
+
   </div>
 
-  <!-- Messages per day -->
-  <div class="card">
-    <h3>Messages Per Day</h3>
-    <p>(Graph Placeholder - integrate Chart.js later)</p>
+
+  <!-- CHARTS -->
+  <div class="dashboard-grid-2">
+
+    <!-- BAR CHART -->
+    <div class="card">
+
+      <h3>Closed Tickets Per Day</h3>
+
+      <canvas id="messagesChart"></canvas>
+
+    </div>
+
+
+    <!-- PIE CHART -->
+    <div class="card pie-chart-card">
+
+      <h3>Ticket Distribution</h3>
+
+      <div class="pie-chart-wrapper">
+        <canvas id="ticketStatusChart"></canvas>
+      </div>
+
+    </div>
+
   </div>
 
-  <!-- Completed Requests Trend -->
-  <div class="card">
-    <h3>Daily Completed Requests</h3>
-    <p>(Graph Placeholder)</p>
+
+  <!-- SECOND ROW -->
+  <div class="dashboard-grid-2">
+
+    <!-- RECENT ASSIGNED TICKETS -->
+    <div class="card">
+
+      <h3>Tickets to handle</h3>
+
+      {% for ticket in recent_open_tickets %}
+
+      <div class="ticket-mini-card">
+
+        <div class="ticket-title">
+          Ticket #{{ticket.ticket_id}}
+        </div>
+
+        <div class="ticket-desc">
+          {{ticket.last_message[:100]}}
+          {% if ticket.last_message|length > 100 %}...{% endif %}
+        </div>
+
+        <div class="ticket-meta">
+          Status: {{ticket.status}}
+          •
+          {{ticket.created_at}}
+        </div>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+
+    <!-- TICKETS PER BRAND -->
+    <div class="card">
+
+      <h3>Tickets Per Brand</h3>
+
+      {% for brand in tickets_per_brand %}
+
+      <div class="brand-ticket-row">
+
+        <div class="brand-info">
+
+          <img src="{{brand.logo}}"
+               class="brand-logo">
+
+          <div class="brand-name">
+            {{brand.brand_name}}
+          </div>
+
+        </div>
+
+        <div class="ticket-count">
+          {{brand.ticket_count}}
+        </div>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
   </div>
 
-  <!-- Recent Activity -->
+
+  <!-- RECENT REQUESTS -->
   <div class="card">
-    <h3>Recent Requests</h3>
+
+    <h3>Recent handled Tickets</h3>
+
     <table class="table">
+
       <tr>
         <th>User</th>
         <th>Query</th>
         <th>Status</th>
+        <th>Created At</th>
       </tr>
 
-      {% for req in recent_requests %}
+      {% for req in recent_tickets %}
+
       <tr>
-        <td>{{req.user}}</td>
-        <td>{{req.message}}</td>
+
+        <td>TICKET_{{req.ticket_id}}</td>
+
+        <td>{{req.last_message}}</td>
+
         <td>
           <span class="badge {{req.status}}">
             {{req.status}}
           </span>
         </td>
+
+        <td>{{req.created_at}}</td>
+
       </tr>
+
       {% endfor %}
+
     </table>
+
   </div>
 
 </div>
+
+
+<!-- CHART JS -->
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // BAR CHART
+  fetch('/api/tickets-per-day')
+    .then(res => res.json())
+    .then(data => {
+
+      const ctx = document
+        .getElementById('messagesChart')
+        .getContext('2d');
+
+      new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+          labels: data.labels,
+
+          datasets: [{
+            label: 'Closed Tickets',
+            data: data.counts.map(Number),
+            borderWidth: 2
+          }]
+        },
+
+        options: {
+          responsive: true,
+
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+
+      });
+
+    })
+    .catch(err => console.error(err));
+
+
+
+  // PIE CHART
+  fetch('/api/ticket-status-distribution')
+    .then(res => res.json())
+    .then(data => {
+
+      const pieCtx = document
+        .getElementById('ticketStatusChart')
+        .getContext('2d');
+
+      new Chart(pieCtx, {
+
+        type: 'doughnut',
+
+        data: {
+
+          labels: data.labels,
+
+          datasets: [{
+            data: data.counts,
+            borderWidth: 1
+          }]
+
+        },
+
+        options: {
+
+          responsive: true,
+          maintainAspectRatio: false,
+
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+
+        }
+
+      });
+
+    })
+    .catch(err => console.error(err));
+
+});
+
+</script>
 
 </body>
 </html>

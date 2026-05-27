@@ -170,3 +170,627 @@ RuntimeError: Cannot send a request, as the client has been closed.
 2026-04-06 11:37:29,610 | INFO | tenantai | get_bot_response.py:51 | get_from_kafka() | Listening on bot_message_topic
 2026-04-06 11:45:48,741 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
 2026-04-06 11:45:48,742 | INFO | tenantai | get_bot_response.py:51 | get_from_kafka() | Listening on bot_message_topic
+2026-04-10 12:47:01,548 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-10 12:47:01,547 | INFO | tenantai | get_bot_response.py:51 | get_from_kafka() | Listening on bot_message_topic
+2026-04-10 14:32:03,799 | INFO | tenantai | get_bot_response.py:51 | get_from_kafka() | Listening on bot_message_topic
+2026-04-10 14:32:03,799 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-13 07:49:55,131 | INFO | tenantai | get_bot_response.py:52 | get_from_kafka() | Listening on bot_message_topic
+2026-04-13 07:49:55,181 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-13 15:05:50,061 | ERROR | tenantai | get_bot_response.py:87 | get_from_kafka() | Error in recieving from kafka : 'brand_tone'
+Traceback (most recent call last):
+  File "/app/get_bot_response.py", line 65, in get_from_kafka
+    message_response['tenant_brand_id'] = message_query['tenant_brand_id']
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'brand_tone'
+2026-04-13 15:16:55,755 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-13 15:16:55,757 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-13 15:27:02,795 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-13 15:27:02,849 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-13 15:33:28,624 | ERROR | tenantai | get_bot_response.py:93 | get_from_kafka() | Error in recieving from kafka : generate_answer() missing 1 required positional argument: 'context_chunks'
+Traceback (most recent call last):
+  File "/app/get_bot_response.py", line 80, in get_from_kafka
+    answer, token_used = rag.generate_answer(message_query.get("message"), message_query['brand_tone'], relevant_chunks)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: generate_answer() missing 1 required positional argument: 'context_chunks'
+2026-04-14 10:52:49,977 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-14 10:52:49,984 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-14 11:28:25,009 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-14 11:28:25,008 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-14 11:30:17,779 | ERROR | tenantai | get_bot_response.py:93 | get_from_kafka() | Error in recieving from kafka : Object of type datetime is not JSON serializable
+Traceback (most recent call last):
+  File "/app/get_bot_response.py", line 87, in get_from_kafka
+    producer.send(STORE_MESSAGE_KAFKA_TOPIC, value=message_response)
+  File "/usr/local/lib/python3.11/site-packages/kafka/producer/kafka.py", line 849, in send
+    value_bytes = self._serialize(
+                  ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/kafka/producer/kafka.py", line 982, in _serialize
+    return f(data)
+           ^^^^^^^
+  File "/app/get_bot_response.py", line 41, in <lambda>
+    value_serializer=lambda x: json.dumps(x).encode('utf-8')
+                               ^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type datetime is not JSON serializable
+2026-04-14 12:22:23,707 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-14 12:22:23,708 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-14 12:43:10,170 | ERROR | tenantai | get_bot_response.py:93 | get_from_kafka() | Error in recieving from kafka : Connection error.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 101, in handle_request
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 78, in handle_request
+    stream = self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_backends/sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno -5] No address associated with hostname
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/groq/_base_client.py", line 1003, in request
+    response = self._client.send(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno -5] No address associated with hostname
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/get_bot_response.py", line 80, in get_from_kafka
+    answer, token_used = rag.generate_answer(message_query.get('session_id'), message_query.get("message"), message_query['brand_tone'], relevant_chunks)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/rag.py", line 179, in generate_answer
+    response = client.chat.completions.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/groq/resources/chat/completions.py", line 461, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/groq/_base_client.py", line 1280, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/groq/_base_client.py", line 1035, in request
+    raise APIConnectionError(request=request) from err
+groq.APIConnectionError: Connection error.
+2026-04-14 12:45:37,794 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-14 12:45:37,794 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-14 15:34:11,778 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-14 15:34:11,778 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-14 15:51:20,830 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-14 15:51:20,830 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-15 10:57:59,354 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-15 10:57:59,354 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-15 12:03:10,861 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-15 12:03:10,860 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-15 15:28:53,415 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-15 15:28:53,416 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-15 15:39:44,738 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-15 15:39:44,737 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-16 12:56:33,234 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-16 12:56:33,234 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-16 14:25:51,898 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-16 14:25:51,899 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-16 15:31:48,970 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-16 15:31:48,970 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-17 12:49:50,472 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-17 12:49:50,473 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-18 15:03:32,220 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-18 15:03:32,223 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-18 15:09:10,140 | ERROR | tenantai | get_bot_response.py:93 | get_from_kafka() | Error in recieving from kafka : Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01kh1ggnt8enda4p648hk3r49n` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 4568, Requested 1491. Please try again in 590ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+Traceback (most recent call last):
+  File "/app/get_bot_response.py", line 80, in get_from_kafka
+    answer, token_used = rag.generate_answer(message_query.get('session_id'), message_query.get("message"), message_query['brand_tone'], relevant_chunks)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/rag.py", line 179, in generate_answer
+    response = client.chat.completions.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/groq/resources/chat/completions.py", line 461, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/groq/_base_client.py", line 1280, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/groq/_base_client.py", line 1067, in request
+    raise self._make_status_error_from_response(err.response) from None
+groq.RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01kh1ggnt8enda4p648hk3r49n` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 4568, Requested 1491. Please try again in 590ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+2026-04-19 10:38:06,658 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-19 10:38:07,628 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-20 11:31:01,676 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-20 11:31:02,737 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-21 12:06:39,474 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-21 12:06:39,475 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-22 12:43:10,693 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-22 12:43:10,719 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-22 12:43:31,647 | ERROR | tenantai | get_bot_response.py:93 | get_from_kafka() | Error in recieving from kafka : Cannot send a request, as the client has been closed.
+Traceback (most recent call last):
+  File "/app/get_bot_response.py", line 77, in get_from_kafka
+    relevant_chunks = rag.retrieve_relevant_chunks(int(message_query['tenant_id']), int(message_query['tenant_brand_id']), message_query.get("message"))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/rag.py", line 125, in retrieve_relevant_chunks
+    query_embedding = get_model().encode([query]).tolist()
+                      ^^^^^^^^^^^
+  File "/app/rag.py", line 22, in get_model
+    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sentence_transformers/util/decorators.py", line 41, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sentence_transformers/sentence_transformer/model.py", line 183, in __init__
+    super().__init__(
+  File "/usr/local/lib/python3.11/site-packages/sentence_transformers/base/model.py", line 198, in __init__
+    modules, self.module_kwargs = self._load_modules(
+                                  ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sentence_transformers/base/model.py", line 969, in _load_modules
+    return self._load_config_modules(model_name_or_path, **load_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sentence_transformers/base/model.py", line 1160, in _load_config_modules
+    module = module_class.load(
+             ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sentence_transformers/base/modules/transformer.py", line 1708, in load
+    return cls(model_name_or_path=model_name_or_path, **init_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sentence_transformers/util/decorators.py", line 87, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sentence_transformers/base/modules/transformer.py", line 659, in __init__
+    self.processor = AutoProcessor.from_pretrained(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/transformers/models/auto/processing_auto.py", line 326, in from_pretrained
+    processor_config_file = cached_file(pretrained_model_name_or_path, PROCESSOR_NAME, **cached_file_kwargs)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/transformers/utils/hub.py", line 278, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/transformers/utils/hub.py", line 512, in cached_files
+    raise e
+  File "/usr/local/lib/python3.11/site-packages/transformers/utils/hub.py", line 422, in cached_files
+    hf_hub_download(
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/file_download.py", line 997, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/file_download.py", line 1130, in _hf_hub_download_to_cache_dir
+    _get_metadata_or_catch_error(
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/file_download.py", line 1669, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/file_download.py", line 1591, in get_hf_file_metadata
+    response = _httpx_follow_relative_redirects_with_backoff(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/utils/_http.py", line 685, in _httpx_follow_relative_redirects_with_backoff
+    response = http_backoff(
+               ^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/utils/_http.py", line 559, in http_backoff
+    return next(
+           ^^^^^
+  File "/usr/local/lib/python3.11/site-packages/huggingface_hub/utils/_http.py", line 467, in _http_backoff_base
+    response = client.request(method=method, url=url, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 901, in send
+    raise RuntimeError("Cannot send a request, as the client has been closed.")
+RuntimeError: Cannot send a request, as the client has been closed.
+2026-04-25 12:44:28,984 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-25 12:44:28,985 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-27 15:03:51,162 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-27 15:03:51,162 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-29 13:15:23,969 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb.txt', 'brand_ids': [2]}
+2026-04-29 13:15:25,187 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Status : False - Error in generating: Stream has ended unexpectedly
+2026-04-29 13:31:22,869 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb1.txt', 'brand_ids': [2]}
+2026-04-29 13:31:22,891 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Status : False - Error in generating: Stream has ended unexpectedly
+2026-04-29 13:33:01,788 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-29 13:33:01,788 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-29 14:07:50,597 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb2.txt', 'brand_ids': [2]}
+2026-04-29 14:07:50,746 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Status : False - Error in generating: 'str' object has no attribute 'name'
+2026-04-29 14:19:53,224 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-29 14:19:53,224 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-29 15:38:35,316 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-29 15:38:35,315 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-29 16:02:38,671 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb3.txt', 'brand_ids': [2]}
+2026-04-29 16:02:38,940 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Status : False - Error in generating: 'str' object has no attribute 'read'
+2026-04-29 16:09:42,831 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-04-29 16:09:42,831 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-04-30 13:41:12,954 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb4.txt', 'brand_ids': [2]}
+2026-04-30 13:42:57,095 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 14:41:04,647 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-01 14:41:04,648 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-01 14:51:19,989 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-01 14:51:19,989 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-01 14:56:20,599 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb5.txt', 'brand_ids': [2]}
+2026-05-01 14:57:58,713 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 15:09:54,343 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-01 15:09:54,376 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-01 15:14:54,879 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/1.txt', 'brand_ids': [1]}
+2026-05-01 15:14:54,893 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : False - No chunks created.
+2026-05-01 15:15:21,064 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb6.txt', 'brand_ids': [2]}
+2026-05-01 15:17:00,025 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 15:24:13,167 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb7.txt', 'brand_ids': [2]}
+2026-05-01 15:24:13,593 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 15:27:17,701 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb8.txt', 'brand_ids': [2]}
+2026-05-01 15:27:18,409 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 15:31:04,558 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb9.txt', 'brand_ids': [2]}
+2026-05-01 15:31:04,951 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 15:36:32,168 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb10.txt', 'brand_ids': [2]}
+2026-05-01 15:36:32,533 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 15:51:43,206 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb12.txt', 'brand_ids': [2]}
+2026-05-01 15:51:43,691 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 16:07:42,584 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb16.txt', 'brand_ids': [2]}
+2026-05-01 16:07:42,986 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 16:11:36,686 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb167.txt', 'brand_ids': [2]}
+2026-05-01 16:11:37,039 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 16:15:29,215 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb17.txt', 'brand_ids': [2]}
+2026-05-01 16:15:29,559 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-01 16:20:10,249 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb18.txt', 'brand_ids': [2]}
+2026-05-01 16:20:10,592 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-02 15:29:58,915 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb19.txt', 'brand_ids': [2]}
+2026-05-02 15:30:00,976 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-02 15:38:16,085 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb20.txt', 'brand_ids': [2]}
+2026-05-02 15:38:16,760 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-02 16:19:00,865 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb21.txt', 'brand_ids': [2]}
+2026-05-02 16:19:01,125 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-02 16:20:37,919 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb212.txt', 'brand_ids': [2]}
+2026-05-02 16:20:38,619 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-02 16:24:50,432 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb2121.txt', 'brand_ids': [2]}
+2026-05-02 16:24:50,984 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-03 11:22:41,489 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-03 11:22:42,581 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-03 11:27:54,895 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb22.txt', 'brand_ids': [2]}
+2026-05-03 11:29:34,566 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-03 12:59:13,857 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb111.txt', 'brand_ids': [2]}
+2026-05-03 12:59:14,422 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-03 13:04:25,134 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb112.txt', 'brand_ids': [2]}
+2026-05-03 13:04:25,485 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-03 13:05:50,531 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb123.txt', 'brand_ids': [2]}
+2026-05-03 13:05:50,884 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-03 13:06:46,701 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'uploaded_file': 'files/tenant_1/college_kb124.txt', 'brand_ids': [2]}
+2026-05-03 13:06:47,101 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-03 13:19:41,024 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'name': 'test', 'uploaded_file': 'files/tenant_1/college_kb126.txt', 'brand_ids': [2]}
+2026-05-03 13:19:41,027 | ERROR | tenantai | store_file_vector.py:60 | get_from_kafka() | Error in recieving from kafka : file_to_vector() got an unexpected keyword argument 'name'
+Traceback (most recent call last):
+  File "/app/store_file_vector.py", line 55, in get_from_kafka
+    result, message = rag.file_to_vector(**file_context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: file_to_vector() got an unexpected keyword argument 'name'
+2026-05-03 13:22:39,075 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-03 13:22:39,076 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-03 13:27:54,752 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'name': 'test123', 'uploaded_file': 'files/tenant_1/college_kb127.txt', 'brand_ids': [2]}
+2026-05-03 13:29:15,518 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-03 13:30:04,321 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'name': 'er', 'uploaded_file': 'files/tenant_1/college_kb128.txt', 'brand_ids': [2]}
+2026-05-03 13:30:04,704 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-03 13:35:40,874 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'name': 'ok', 'uploaded_file': 'files/tenant_1/college_kb129.txt', 'brand_ids': [2]}
+2026-05-03 13:35:41,345 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-12 07:37:38,575 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-12 07:37:38,645 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-12 15:15:18,177 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-12 15:15:18,186 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-13 07:12:28,292 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-13 07:12:28,296 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-13 08:19:16,363 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-13 08:19:16,363 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-13 16:18:19,417 | INFO | tenantai | store_file_vector.py:54 | get_from_kafka() | file_context : {'tenant_id': 1, 'name': 'remindly_kb', 'uploaded_file': 'files/tenant_1/Remindly_Knowledge_Base.pdf', 'brand_ids': [3]}
+2026-05-13 16:20:05,821 | INFO | tenantai | store_file_vector.py:58 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-14 13:53:13,980 | INFO | tenantai | store_file_vector.py:48 | get_from_kafka() | Listening on file_upload_topic
+2026-05-14 13:53:13,979 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-14 14:42:17,415 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-14 14:42:17,416 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-14 14:48:16,396 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | file_context : {'file_id': 38, 'tenant_id': 1, 'name': 'dadaf', 'uploaded_file': 'files/tenant_1/college_kb1292.txt', 'brand_ids': [2]}
+2026-05-14 14:50:10,448 | ERROR | tenantai | store_file_vector.py:75 | update_file_status() | Updation failed 'generator' object has no attribute 'query'
+Traceback (most recent call last):
+  File "/app/store_file_vector.py", line 70, in update_file_status
+    document = db.query(models.TenantDocument).filter(models.TenantDocument.document_id==file_id).first()
+               ^^^^^^^^
+AttributeError: 'generator' object has no attribute 'query'
+2026-05-14 14:50:10,463 | INFO | tenantai | store_file_vector.py:61 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-14 17:56:17,442 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-14 17:56:17,443 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-14 18:01:49,582 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | file_context : {'file_id': 39, 'tenant_id': 1, 'name': 'errr', 'uploaded_file': 'files/tenant_1/college_kb12911.txt', 'brand_ids': [2]}
+2026-05-14 18:03:34,790 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-14 18:12:35,724 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | file_context : {'file_id': 40, 'tenant_id': 1, 'name': 'et', 'uploaded_file': 'files/tenant_1/college_kb129110.txt', 'brand_ids': [2]}
+2026-05-14 18:12:36,114 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-15 11:44:56,632 | ERROR | tenantai | get_bot_response.py:94 | get_from_kafka() | Error in recieving from kafka : Error getting collection: Database error: error returned from database: (code: 14) unable to open database file
+Traceback (most recent call last):
+  File "/app/get_bot_response.py", line 78, in get_from_kafka
+    relevant_chunks = rag.retrieve_relevant_chunks(int(message_query['tenant_id']), int(message_query['tenant_brand_id']), message_query.get("message"))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/rag.py", line 148, in retrieve_relevant_chunks
+    results = collection.query(
+              ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/chromadb/api/models/Collection.py", line 263, in query
+    query_results = self._client._query(
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/chromadb/api/rust.py", line 582, in _query
+    rust_response = self.bindings.query(
+                    ^^^^^^^^^^^^^^^^^^^^
+chromadb.errors.InternalError: Error getting collection: Database error: error returned from database: (code: 14) unable to open database file
+2026-05-15 12:20:36,836 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | file_context : {'file_id': 41, 'tenant_id': 1, 'name': 'remindly_kb', 'uploaded_file': 'files/tenant_1/Remindly_Customer_Knowledge_Base.pdf', 'brand_ids': [3]}
+2026-05-15 12:20:38,231 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Status : False - Error in generating: Error getting collection: Database error: error returned from database: (code: 14) unable to open database file
+2026-05-15 16:07:55,351 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | file_context : {'file_id': 42, 'tenant_id': 1, 'name': 'ed', 'uploaded_file': 'files/tenant_1/Remindly_Customer_Knowledge_Base1.pdf', 'brand_ids': [3]}
+2026-05-15 16:07:55,913 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Status : False - Error in generating: Error getting collection: Database error: error returned from database: (code: 14) unable to open database file
+2026-05-15 16:14:39,981 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-15 16:19:40,045 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | file_context : {'file_id': 43, 'tenant_id': 1, 'name': 'edd', 'uploaded_file': 'files/tenant_1/Remindly_Customer_Knowledge_Base2.pdf', 'brand_ids': [3]}
+2026-05-15 16:21:17,201 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-15 16:26:23,259 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-15 16:26:23,259 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-16 13:43:06,011 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-16 13:43:06,012 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-18 14:38:31,286 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-18 14:38:31,285 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-20 12:50:53,086 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-20 12:50:53,087 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-20 18:05:22,490 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | file_context : {'file_id': 44, 'tenant_id': 1, 'name': 'topdf_kb', 'uploaded_file': 'files/tenant_1/pdf_generator_chatbot_knowledge_base17.pdf', 'brand_ids': [1]}
+2026-05-20 18:06:39,499 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Status : True - Successfuly stored vectors
+2026-05-21 14:52:59,909 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-21 14:52:59,909 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-21 14:56:01,695 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-21 14:56:01,697 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-21 15:19:52,151 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-21 15:19:52,151 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-21 15:28:37,583 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-21 15:28:37,584 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-21 15:32:12,419 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-21 15:32:12,418 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-21 15:48:21,493 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-21 15:48:21,541 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-21 15:53:21,559 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Recived from topic KAFKA_TOPIC_FILE_UPLOAD: {'file_id': 45, 'tenant_id': 6, 'name': 'college_kb', 'uploaded_file': 'files/tenant_6/college_kb.txt', 'brand_ids': [7]}
+2026-05-21 15:55:00,992 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Sending to topic KAFKA_TOPIC_FILE_UPLOAD_STATUS: Result - True, Message - Successfuly stored vectors
+2026-05-21 15:59:16,810 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '6', 'tenant_brand_id': '7', 'brand_tone': 'PROFESSIONAL', 'session_id': '99a08b37-2357-46eb-ae0a-f2cab42c3ba1', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-21T15:59:16.790165', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-21 15:59:27,710 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-21 15:59:27,814 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-21 15:59:57,107 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '6', 'tenant_brand_id': '7', 'brand_tone': 'PROFESSIONAL', 'session_id': '99a08b37-2357-46eb-ae0a-f2cab42c3ba1', 'sender': 'User', 'message': 'Do you have any placement support?', 'timestamp': '2026-05-21T15:59:57.077205', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-21 15:59:58,213 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-21 15:59:58,217 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-21 16:00:26,099 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '6', 'tenant_brand_id': '7', 'brand_tone': 'PROFESSIONAL', 'session_id': '99a08b37-2357-46eb-ae0a-f2cab42c3ba1', 'sender': 'User', 'message': 'How to apply for admission', 'timestamp': '2026-05-21T16:00:26.090345', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-21 16:00:27,290 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-21 16:00:27,296 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-21 16:14:20,109 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-21 16:14:20,109 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-22 15:15:35,353 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-22T15:15:34.980718', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:17:19,938 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:17:20,041 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:17:20,053 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'Hi', 'timestamp': '2026-05-22T15:17:18.844019', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:17:20,567 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:17:20,579 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:22:56,691 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'ok', 'timestamp': '2026-05-22T15:22:56.658759', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:22:57,746 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:22:57,751 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:29:44,214 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-22 15:29:44,215 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-22 15:34:44,270 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'Hello all', 'timestamp': '2026-05-22T15:30:13.253643', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:36:20,109 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:36:20,213 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:54:11,698 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'yeah', 'timestamp': '2026-05-22T15:54:11.676217', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:54:18,122 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:54:18,127 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:54:37,859 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'yes', 'timestamp': '2026-05-22T15:54:37.853054', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:54:38,792 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:54:38,798 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:56:35,448 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'ok', 'timestamp': '2026-05-22T15:56:35.434994', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:56:36,478 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:56:36,483 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:57:01,344 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'work', 'timestamp': '2026-05-22T15:57:01.336154', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:57:02,424 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:57:02,429 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:57:22,402 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'how it works?', 'timestamp': '2026-05-22T15:57:22.392033', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:57:23,488 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:57:23,492 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 15:57:50,353 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '91cde4da-8e13-42bd-8a9e-84c6994ba33c', 'sender': 'User', 'message': 'Joe here', 'timestamp': '2026-05-22T15:57:50.346417', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 15:57:51,077 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 15:57:51,082 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 16:09:26,127 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '91cde4da-8e13-42bd-8a9e-84c6994ba33c', 'sender': 'User', 'message': 'ok', 'timestamp': '2026-05-22T16:09:26.110050', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 16:09:26,926 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 16:09:26,930 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 16:12:12,265 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '91cde4da-8e13-42bd-8a9e-84c6994ba33c', 'sender': 'User', 'message': 'hello', 'timestamp': '2026-05-22T16:12:12.232780', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 16:12:13,726 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 16:12:13,731 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 16:18:53,620 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '91cde4da-8e13-42bd-8a9e-84c6994ba33c', 'sender': 'User', 'message': 'hi there', 'timestamp': '2026-05-22T16:18:53.601094', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 16:18:54,418 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 16:18:54,425 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 16:23:56,011 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '91cde4da-8e13-42bd-8a9e-84c6994ba33c', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-22T16:23:55.992995', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 16:23:57,706 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 16:23:57,711 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-22 16:25:13,496 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '91cde4da-8e13-42bd-8a9e-84c6994ba33c', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-22T16:25:13.486742', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-22 16:25:14,371 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-22 16:25:14,376 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-23 10:10:05,819 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'hi', 'timestamp': '2026-05-23T10:10:05.729032', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-23 10:10:07,577 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-23 10:10:07,583 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-23 10:12:15,493 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '6dd596d6-78ad-4223-a4bf-d5534b177a82', 'sender': 'User', 'message': 'Hi', 'timestamp': '2026-05-23T10:12:15.487202', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-23 10:12:16,480 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-23 10:12:16,485 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-23 10:16:34,332 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': '7a3cf660-36a4-4203-afeb-709061d51a88', 'sender': 'User', 'message': 'Hii', 'timestamp': '2026-05-23T10:16:34.316130', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-23 10:16:35,101 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-23 10:16:35,105 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-23 10:17:40,000 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': '91cde4da-8e13-42bd-8a9e-84c6994ba33c', 'sender': 'User', 'message': 'hi', 'timestamp': '2026-05-23T10:17:39.945798', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-23 10:17:40,520 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-23 10:17:40,525 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 14:48:08,157 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-26 14:48:08,158 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-26 14:53:08,211 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': '40e60e7b-ffcb-455e-93d9-94c1cd74cbf4', 'sender': 'User', 'message': 'Hi', 'timestamp': '2026-05-26T14:49:05.421487', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 14:54:40,562 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 14:54:40,666 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 14:54:40,674 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': 'fe692330-7ec5-40be-8ed6-8dd3e330b528', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T14:53:40.398064', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 14:54:41,075 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 14:54:41,078 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:03:23,306 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': 'dfd7b21e-e1ad-4b9d-9744-796fde7614dc', 'sender': 'User', 'message': 'Hi', 'timestamp': '2026-05-26T15:03:23.289625', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:03:24,052 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:03:24,056 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:08:28,564 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e673dbf4-55c5-44df-8ddd-f3a6293eacd9', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T15:08:28.556106', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:08:29,201 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:08:29,205 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:15:23,531 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e673dbf4-55c5-44df-8ddd-f3a6293eacd9', 'sender': 'User', 'message': 'Reminders page', 'timestamp': '2026-05-26T15:15:23.525700', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:15:24,396 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:15:24,400 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:24:12,746 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-26 15:24:12,746 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-26 15:26:33,861 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-26 15:26:33,862 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-26 15:31:59,535 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Recived from topic KAFKA_TOPIC_FILE_UPLOAD: {'file_id': 47, 'tenant_id': 1, 'name': 'gitm_kb', 'uploaded_file': 'files/tenant_1/college_kb.txt', 'brand_ids': [10]}
+2026-05-26 15:33:27,457 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Sending to topic KAFKA_TOPIC_FILE_UPLOAD_STATUS: Result - True, Message - Successfuly stored vectors
+2026-05-26 15:35:02,652 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '10', 'brand_tone': 'PROFESSIONAL', 'session_id': 'ff7c13fe-bea6-4b6e-81fd-8f12fa3cfc98', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T15:35:02.639895', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:35:11,084 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:35:11,188 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:35:47,448 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '10', 'brand_tone': 'PROFESSIONAL', 'session_id': 'ff7c13fe-bea6-4b6e-81fd-8f12fa3cfc98', 'sender': 'User', 'message': 'How to apply for admission?', 'timestamp': '2026-05-26T15:35:47.439229', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:35:48,663 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:35:48,666 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:36:52,994 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '10', 'brand_tone': 'PROFESSIONAL', 'session_id': 'ff7c13fe-bea6-4b6e-81fd-8f12fa3cfc98', 'sender': 'User', 'message': 'Do you have placement support?', 'timestamp': '2026-05-26T15:36:52.989269', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:36:54,138 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:36:54,143 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:37:46,588 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '10', 'brand_tone': 'PROFESSIONAL', 'session_id': 'dd94086b-78b4-4ad3-87f7-fa81299f0b80', 'sender': 'User', 'message': 'Hello, I am Joe', 'timestamp': '2026-05-26T15:37:46.576395', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:37:47,429 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:37:47,432 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:40:55,474 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e673dbf4-55c5-44df-8ddd-f3a6293eacd9', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T15:40:55.465722', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:40:56,408 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:40:56,411 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 15:41:09,536 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e673dbf4-55c5-44df-8ddd-f3a6293eacd9', 'sender': 'User', 'message': 'How does it works?', 'timestamp': '2026-05-26T15:41:09.528242', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 15:41:10,608 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 15:41:10,614 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 18:38:42,480 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-26 18:38:42,493 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-26 18:46:51,225 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-26 18:46:51,225 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-26 18:51:51,277 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Recived from topic KAFKA_TOPIC_FILE_UPLOAD: {'file_id': 48, 'tenant_id': 1, 'name': 'gitm_kb', 'uploaded_file': 'files/tenant_1/college_kb.txt', 'brand_ids': [11]}
+2026-05-26 18:53:16,875 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Sending to topic KAFKA_TOPIC_FILE_UPLOAD_STATUS: Result - True, Message - Successfuly stored vectors
+2026-05-26 18:57:03,442 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '10', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e05558ad-548e-4b0d-90fa-88a62d7462d4', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T18:57:03.426025', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 18:57:14,413 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 18:57:14,516 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 18:57:50,758 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '10', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e05558ad-548e-4b0d-90fa-88a62d7462d4', 'sender': 'User', 'message': 'How to apply for admissions?', 'timestamp': '2026-05-26T18:57:50.752851', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 18:57:52,402 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 18:57:52,408 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:05:55,604 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '11', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e14418ae-c6aa-4e6b-a864-8fffc31f7af1', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T19:05:55.594214', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:05:56,292 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:05:56,296 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:10:36,970 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '11', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e14418ae-c6aa-4e6b-a864-8fffc31f7af1', 'sender': 'User', 'message': 'How to apply for admissions?', 'timestamp': '2026-05-26T19:10:36.961178', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:10:38,022 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:10:38,026 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:15:54,006 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '11', 'brand_tone': 'PROFESSIONAL', 'session_id': 'fbc6fc65-0d9f-4b8c-b552-73c1375c6bc4', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T19:15:53.994441', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:15:54,653 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:15:54,658 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:16:11,635 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '11', 'brand_tone': 'PROFESSIONAL', 'session_id': 'fbc6fc65-0d9f-4b8c-b552-73c1375c6bc4', 'sender': 'User', 'message': 'How to apply for admissions?', 'timestamp': '2026-05-26T19:16:11.631344', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:16:12,611 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:16:12,614 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:17:45,149 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '11', 'brand_tone': 'PROFESSIONAL', 'session_id': 'fbc6fc65-0d9f-4b8c-b552-73c1375c6bc4', 'sender': 'User', 'message': 'Is placement available?', 'timestamp': '2026-05-26T19:17:45.143440', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:17:46,231 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:17:46,238 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:27:37,112 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-26 19:27:37,113 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-26 19:31:40,504 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-26 19:31:40,503 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-26 19:36:40,554 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Recived from topic KAFKA_TOPIC_FILE_UPLOAD: {'file_id': 49, 'tenant_id': 1, 'name': 'gitm_kb', 'uploaded_file': 'files/tenant_1/college_kb.txt', 'brand_ids': [12]}
+2026-05-26 19:38:22,195 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Sending to topic KAFKA_TOPIC_FILE_UPLOAD_STATUS: Result - True, Message - Successfuly stored vectors
+2026-05-26 19:43:15,836 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T19:43:15.820266', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:43:23,678 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:43:23,781 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:43:41,856 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'How to apply for admissions?', 'timestamp': '2026-05-26T19:43:41.848643', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:43:42,590 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:43:42,594 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:46:29,887 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'Is the placement interview available?', 'timestamp': '2026-05-26T19:46:29.879655', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:46:30,711 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:46:30,715 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:47:25,750 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': 'ba43822c-535f-4d26-8066-ef48a2117a5a', 'sender': 'User', 'message': 'Hello I am Joe', 'timestamp': '2026-05-26T19:47:25.742894', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:47:26,375 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:47:26,380 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:48:34,811 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e896fee2-eaf1-4723-9f24-580300955ff8', 'sender': 'User', 'message': 'Hello what is its features?', 'timestamp': '2026-05-26T19:48:34.805328', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:48:35,936 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:48:35,940 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:49:12,703 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': '8211fd2d-3856-43e6-8ee6-862821becf48', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T19:49:12.696527', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:49:13,274 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:49:13,279 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 19:49:25,857 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': '8211fd2d-3856-43e6-8ee6-862821becf48', 'sender': 'User', 'message': 'How does this works?', 'timestamp': '2026-05-26T19:49:25.850898', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 19:49:26,686 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 19:49:26,690 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 20:07:32,682 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'What are the courses offered?', 'timestamp': '2026-05-26T20:07:32.669165', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 20:07:33,554 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 20:07:33,560 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-26 20:07:46,827 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'Where is this college located?', 'timestamp': '2026-05-26T20:07:46.820349', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-26 20:07:47,323 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-26 20:07:47,328 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:25:03,495 | INFO | tenantai | get_bot_response.py:53 | get_from_kafka() | Listening on bot_message_topic
+2026-05-27 12:25:03,493 | INFO | tenantai | store_file_vector.py:51 | get_from_kafka() | Listening on file_upload_topic
+2026-05-27 12:25:03,673 | INFO | tenantai | store_file_vector.py:57 | get_from_kafka() | Recived from topic KAFKA_TOPIC_FILE_UPLOAD: {'file_id': 49, 'tenant_id': 1, 'name': 'gitm_kb', 'uploaded_file': 'files/tenant_1/college_kb.txt', 'brand_ids': [12]}
+2026-05-27 12:25:03,678 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T19:43:15.820266', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:25:14,339 | INFO | tenantai | store_file_vector.py:62 | get_from_kafka() | Sending to topic KAFKA_TOPIC_FILE_UPLOAD_STATUS: Result - True, Message - Successfuly stored vectors
+2026-05-27 12:25:15,519 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:25:15,621 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:25:15,624 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'How to apply for admissions?', 'timestamp': '2026-05-26T19:43:41.848643', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:25:17,131 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:25:17,135 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:25:17,139 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'Is the placement interview available?', 'timestamp': '2026-05-26T19:46:29.879655', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:25:17,795 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:25:17,799 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:25:17,802 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': 'ba43822c-535f-4d26-8066-ef48a2117a5a', 'sender': 'User', 'message': 'Hello I am Joe', 'timestamp': '2026-05-26T19:47:25.742894', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:25:18,333 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:25:18,337 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:25:18,344 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e896fee2-eaf1-4723-9f24-580300955ff8', 'sender': 'User', 'message': 'Hello what is its features?', 'timestamp': '2026-05-26T19:48:34.805328', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:25:25,248 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:25:25,253 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:25:25,256 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': '8211fd2d-3856-43e6-8ee6-862821becf48', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-26T19:49:12.696527', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:25:43,894 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:25:43,900 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:25:43,909 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': '8211fd2d-3856-43e6-8ee6-862821becf48', 'sender': 'User', 'message': 'How does this works?', 'timestamp': '2026-05-26T19:49:25.850898', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:25:58,789 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:25:58,793 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:25:58,796 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'What are the courses offered?', 'timestamp': '2026-05-26T20:07:32.669165', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:26:15,586 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:26:15,594 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 12:26:15,599 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': '110c70a9-aefe-448e-ab1a-34cc46013928', 'sender': 'User', 'message': 'Where is this college located?', 'timestamp': '2026-05-26T20:07:46.820349', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 12:26:31,348 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 12:26:31,352 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 16:10:30,279 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '12', 'brand_tone': 'PROFESSIONAL', 'session_id': 'fccbb43d-87e4-49a8-9337-424cd114605c', 'sender': 'User', 'message': 'Hello', 'timestamp': '2026-05-27T16:10:30.153060', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 16:10:31,877 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 16:10:31,884 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 16:13:38,030 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '1', 'brand_tone': 'PROFESSIONAL', 'session_id': 'e896fee2-eaf1-4723-9f24-580300955ff8', 'sender': 'User', 'message': 'What is its features?', 'timestamp': '2026-05-27T16:13:38.009280', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 16:13:39,068 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 16:13:39,071 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
+2026-05-27 16:15:30,705 | INFO | tenantai | get_bot_response.py:61 | get_from_kafka() | Received from topic KAFKA_TOPIC_REQ :{'tenant_id': '1', 'tenant_brand_id': '3', 'brand_tone': 'PROFESSIONAL', 'session_id': '8211fd2d-3856-43e6-8ee6-862821becf48', 'sender': 'User', 'message': 'How it works?', 'timestamp': '2026-05-27T16:15:30.671066', 'ticket_id': None, 'event': 'BOT_MESSAGE'}
+2026-05-27 16:15:31,720 | INFO | tenantai | get_bot_response.py:88 | get_from_kafka() | Sending to topic STORE_MESSAGE_KAFKA_TOPIC
+2026-05-27 16:15:31,725 | INFO | tenantai | get_bot_response.py:91 | get_from_kafka() | Sending to topic KAFKA_TOPIC_RES
